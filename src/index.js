@@ -2,6 +2,7 @@ import express from 'express';
 import conectarDB from './config/db.js';
 import hospedajeController from './controllers/hospedajeController.js';
 import habitacionController from './controllers/habitacionController.js';
+import reservaController from './controllers/reservaController.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -35,6 +36,10 @@ app.get('/api/habitaciones/hospedaje/:hospedajeId', habitacionController.listarP
 app.get('/api/habitaciones/:id', habitacionController.obtenerDetalle);
 app.put('/api/habitaciones/:id', habitacionController.actualizar);
 app.delete('/api/habitaciones/:id', habitacionController.eliminar);
+
+// Rutas de Reservas
+app.post('/api/reservas', reservaController.crear);
+app.get('/api/reservas/usuario/:usuarioId', reservaController.listarPorUsuario);
 
 // Middleware para capturar rutas no encontradas y ver qué URL falló
 app.use((req, res) => {
