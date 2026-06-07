@@ -52,7 +52,7 @@ const hospedajeSchema = new mongoose.Schema({
     required: true
   }
 }, {
-  timestamps: true // Crea automáticamente createdAt y updatedAt
+  timestamps: true 
 });
 
 const Hospedaje = mongoose.model('Hospedaje', hospedajeSchema);

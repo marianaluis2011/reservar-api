@@ -21,7 +21,7 @@ const habitacionSchema = new mongoose.Schema({
     min: 0
   },
   servicios: [String],
-  imagenes: [String], // URLs de Cloudinary
+  imagenes: [String], // Falta URL de Cloudinary
   estado: {
     type: String,
     enum: ['activa', 'inactiva'],

@@ -2,7 +2,7 @@ import Habitacion from '../models/habitacion.js';
 import { habitacionSchema } from '../validators/habitacionValidation.js';
 
 const habitacionController = {
-  // Crear una nueva habitación
+
   crear: async (req, res) => {
     try {
       const datosValidados = habitacionSchema.parse(req.body);
@@ -18,7 +18,7 @@ const habitacionController = {
     }
   },
 
-  // Listar todas las habitaciones de un hospedaje específico
+
   listarPorHospedaje: async (req, res) => {
     try {
       const { hospedajeId } = req.params;
@@ -29,7 +29,7 @@ const habitacionController = {
     }
   },
 
-  // Obtener el detalle de una habitación
+
   obtenerDetalle: async (req, res) => {
     try {
       const habitacion = await Habitacion.findById(req.params.id).populate('hospedaje', 'nombre');
@@ -40,7 +40,7 @@ const habitacionController = {
     }
   },
 
-  // Actualizar una habitación
+
   actualizar: async (req, res) => {
     try {
       const datosValidados = habitacionSchema.partial().parse(req.body);
@@ -59,7 +59,7 @@ const habitacionController = {
     }
   },
 
-  // Eliminar una habitación
+
   eliminar: async (req, res) => {
     try {
       const eliminada = await Habitacion.findByIdAndDelete(req.params.id);
