@@ -4,6 +4,7 @@ import authRoutes from './routes/auth.routes.js';
 import hospedajeRoutes from './routes/hospedaje.routes.js';
 import habitacionRoutes from './routes/habitacion.routes.js';
 import reservaRoutes from './routes/reserva.routes.js';
+import { validateJwt } from './middlewares/validateJwt.js'; // Importar el middleware de validación JWT
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -24,10 +25,22 @@ app.use((req, res, next) => {
 });
 
 // Definición de Rutas
+
+// Rutas de Autenticación
 app.use('/api/auth', authRoutes);
-app.use('/api/hospedajes', hospedajeRoutes);
-app.use('/api/habitaciones', habitacionRoutes);
-app.use('/api/reservas', reservaRoutes);
+
+// Rutas protegidas (ejemplo)
+app.get('/api/protected', validateJwt, (req, res) => {
+  res.status(200).json({
+    mensaje: '¡Acceso concedido a la ruta protegida!',
+    usuario: req.user // Información del usuario decodificada del token
+  });
+});
+
+// Aquí irían tus otras rutas, posiblemente protegidas con validateJwt
+// app.use('/api/hospedajes', validateJwt, hospedajeRoutes);
+// app.use('/api/habitaciones', validateJwt, habitacionRoutes);
+// app.use('/api/reservas', validateJwt, reservaRoutes);
 
 // Middleware para capturar rutas no encontradas y ver qué URL falló
 app.use((req, res) => {
