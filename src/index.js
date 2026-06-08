@@ -37,10 +37,10 @@ app.get('/api/protected', validateJwt, (req, res) => {
   });
 });
 
-// Aquí irían tus otras rutas, posiblemente protegidas con validateJwt
-// app.use('/api/hospedajes', validateJwt, hospedajeRoutes);
-// app.use('/api/habitaciones', validateJwt, habitacionRoutes);
-// app.use('/api/reservas', validateJwt, reservaRoutes);
+// Activamos las rutas de la aplicación
+app.use('/api/hospedajes', hospedajeRoutes);
+app.use('/api/habitaciones', habitacionRoutes);
+app.use('/api/reservas', validateJwt, reservaRoutes); // Las reservas requieren login
 
 // Middleware para capturar rutas no encontradas y ver qué URL falló
 app.use((req, res) => {

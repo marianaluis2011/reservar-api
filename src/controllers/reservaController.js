@@ -45,7 +45,7 @@ const reservaController = {
 
       const nuevaReserva = new Reserva({
         ...datosValidados,
-        usuario: datosValidados.usuario || "64f1a2b3c4d5e6f7a8b9c0d1", // Temporal
+        usuario: req.user.id, // Usamos el ID del token JWT
         precioTotal
       });
 

@@ -11,7 +11,7 @@ const hospedajeController = {
       // ID de prueba hasta tener el sistema de usuarios
       const nuevoHospedaje = new Hospedaje({
         ...datosValidados,
-        administrador: datosValidados.administrador || "64f1a2b3c4d5e6f7a8b9c0d1"
+        administrador: req.user.id
       });
 
       await nuevoHospedaje.save();
