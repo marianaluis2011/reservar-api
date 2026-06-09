@@ -45,19 +45,32 @@ const hospedajeController = {
 
   actualizar: async (req, res) => {
     try {
-      const datosValidados = registroHospedajeSchema.partial().parse(req.body);
       const actualizado = await Hospedaje.findOneAndUpdate(
-        { _id: req.params.id },
-        datosValidados,
+        { _id: req.params.id, administrador: req.user.id }, // Filtro: Solo el dueño puede editar
+        req.body,
         { returnDocument: 'after' }
       );
-      if (!actualizado) return res.status(404).json({ mensaje: 'Hospedaje no encontrado' });
+
+      if (!actualizado) {
+        return res.status(404).json({ mensaje: 'Hospedaje no encontrado o no tienes permiso para editarlo' });
+      }
+
       res.json(actualizado);
     } catch (error) {
-      if (error.name === "ZodError") {
-        return res.status(400).json({ mensaje: 'Error de validación', errores: error.errors });
-      }
-      res.status(400).json({ mensaje: 'Error al actualizar', error: error.message });
+      res.status(400).json({ mensaje: 'Error al actualizar el hospedaje', error: error.message });
+    }
+  },
+
+  eliminar: async (req, res) => {
+    try {
+      const eliminado = await Hospedaje.findOneAndDelete({ 
+        _id: req.params.id, 
+        administrador: req.user.id 
+      });
+      if (!eliminado) return res.status(404).json({ mensaje: 'Hospedaje no encontrado o no tienes permiso' });
+      res.json({ mensaje: 'Hospedaje eliminado correctamente' });
+    } catch (error) {
+      res.status(500).json({ mensaje: 'Error al eliminar el hospedaje' });
     }
   }
 };
