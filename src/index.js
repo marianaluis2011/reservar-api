@@ -1,7 +1,10 @@
 import express from 'express';
 import conectarDB from './config/db.js';
-import hospedajeController from './controllers/hospedajeController.js';
-import habitacionController from './controllers/habitacionController.js';
+import authRoutes from './routes/auth.routes.js';
+import hospedajeRoutes from './routes/hospedaje.routes.js';
+import habitacionRoutes from './routes/habitacion.routes.js';
+import reservaRoutes from './routes/reserva.routes.js';
+import { validateJwt } from './middlewares/validateJwt.js'; // Importar el middleware de validación JWT
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -21,20 +24,23 @@ app.use((req, res, next) => {
   next();
 });
 
-// Definición de Rutas de Hospedajes
-// Nota: Para 'registrar' y 'actualizar', el controlador espera que exista 'req.usuario.id'
-// En el futuro, aquí deberás agregar un middleware de autenticación (JWT)
-app.post('/api/hospedajes', hospedajeController.registrar);
-app.get('/api/hospedajes', hospedajeController.listarPublico);
-app.get('/api/hospedajes/:id', hospedajeController.obtenerDetalle);
-app.put('/api/hospedajes/:id', hospedajeController.actualizar);
+// Definición de Rutas
 
-// Rutas de Habitaciones
-app.post('/api/habitaciones', habitacionController.crear);
-app.get('/api/habitaciones/hospedaje/:hospedajeId', habitacionController.listarPorHospedaje);
-app.get('/api/habitaciones/:id', habitacionController.obtenerDetalle);
-app.put('/api/habitaciones/:id', habitacionController.actualizar);
-app.delete('/api/habitaciones/:id', habitacionController.eliminar);
+// Rutas de Autenticación
+app.use('/api/auth', authRoutes);
+
+// Rutas protegidas (ejemplo)
+app.get('/api/protected', validateJwt, (req, res) => {
+  res.status(200).json({
+    mensaje: '¡Acceso concedido a la ruta protegida!',
+    usuario: req.user // Información del usuario decodificada del token
+  });
+});
+
+// Activamos las rutas de la aplicación
+app.use('/api/hospedajes', hospedajeRoutes);
+app.use('/api/habitaciones', habitacionRoutes);
+app.use('/api/reservas', validateJwt, reservaRoutes); // Las reservas requieren login
 
 // Middleware para capturar rutas no encontradas y ver qué URL falló
 app.use((req, res) => {

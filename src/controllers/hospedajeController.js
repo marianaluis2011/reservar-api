@@ -2,16 +2,16 @@ import Hospedaje from '../models/hospedaje.js';
 import { registroHospedajeSchema } from '../validators/hospedajeValidation.js';
 
 const hospedajeController = {
-  // Crear un nuevo hospedaje (Registro)
+
   registrar: async (req, res) => {
     try {
-      // Validar datos de entrada con Zod
+
       const datosValidados = registroHospedajeSchema.parse(req.body);
 
-      // TEMPORAL: Usamos un ID de prueba hasta tener el sistema de usuarios
+      // ID de prueba hasta tener el sistema de usuarios
       const nuevoHospedaje = new Hospedaje({
         ...datosValidados,
-        administrador: datosValidados.administrador || "64f1a2b3c4d5e6f7a8b9c0d1"
+        administrador: req.user.id
       });
 
       await nuevoHospedaje.save();
@@ -24,7 +24,7 @@ const hospedajeController = {
     }
   },
 
-  // Listar hospedajes (Público: solo los aprobados)
+
   listarPublico: async (req, res) => {
     try {
       const hospedajes = await Hospedaje.find({ estado: 'aprobado' });
@@ -34,7 +34,7 @@ const hospedajeController = {
     }
   },
 
-  // Obtener detalle de un hospedaje por ID
+
   obtenerDetalle: async (req, res) => {
     try {
       const hospedaje = await Hospedaje.findById(req.params.id);
@@ -45,7 +45,7 @@ const hospedajeController = {
     }
   },
 
-  // Actualizar datos del hospedaje
+
   actualizar: async (req, res) => {
     try {
       // TEMPORAL: Mientras no hay auth, filtramos solo por ID de hospedaje
