@@ -45,17 +45,19 @@ const hospedajeController = {
 
   actualizar: async (req, res) => {
     try {
-      // TEMPORAL: Mientras no hay auth, filtramos solo por ID de hospedaje
-      // En producción usaremos: { _id: req.params.id, administrador: req.usuario.id }
+      const datosValidados = registroHospedajeSchema.partial().parse(req.body);
       const actualizado = await Hospedaje.findOneAndUpdate(
         { _id: req.params.id },
-        req.body,
+        datosValidados,
         { returnDocument: 'after' }
       );
       if (!actualizado) return res.status(404).json({ mensaje: 'Hospedaje no encontrado' });
       res.json(actualizado);
     } catch (error) {
-      res.status(400).json({ mensaje: 'Error al actualizar' });
+      if (error.name === "ZodError") {
+        return res.status(400).json({ mensaje: 'Error de validación', errores: error.errors });
+      }
+      res.status(400).json({ mensaje: 'Error al actualizar', error: error.message });
     }
   }
 };
