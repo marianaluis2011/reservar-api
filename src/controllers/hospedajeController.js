@@ -7,13 +7,10 @@ const hospedajeController = {
     try {
 
       const datosValidados = registroHospedajeSchema.parse(req.body);
-
-      // ID de prueba hasta tener el sistema de usuarios
       const nuevoHospedaje = new Hospedaje({
         ...datosValidados,
         administrador: req.user.id
       });
-
       await nuevoHospedaje.save();
       res.status(201).json({ mensaje: 'Hospedaje registrado y pendiente de aprobación', hospedaje: nuevoHospedaje });
     } catch (error) {
@@ -27,7 +24,7 @@ const hospedajeController = {
 
   listarPublico: async (req, res) => {
     try {
-      const hospedajes = await Hospedaje.find({ estado: 'aprobado' });
+      const hospedajes = await Hospedaje.find({ estado: 'aprobado' }).populate('provincia', 'nombre');
       res.json(hospedajes);
     } catch (error) {
       res.status(500).json({ mensaje: 'Error al obtener datos' });
@@ -37,7 +34,7 @@ const hospedajeController = {
 
   obtenerDetalle: async (req, res) => {
     try {
-      const hospedaje = await Hospedaje.findById(req.params.id);
+      const hospedaje = await Hospedaje.findById(req.params.id).populate('provincia', 'nombre');
       if (!hospedaje) return res.status(404).json({ mensaje: 'No encontrado' });
       res.json(hospedaje);
     } catch (error) {

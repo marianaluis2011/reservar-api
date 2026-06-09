@@ -10,17 +10,14 @@ const hospedajeSchema = new mongoose.Schema({
     type: String,
     required: [true, 'La descripción es obligatoria']
   },
-  ubicacion: {
-    type: String,
-    required: [true, 'La ubicación es obligatoria']
-  },
+  provincia: { type: mongoose.Schema.Types.ObjectId, ref: 'Provincia', required: true },
   imagenPrincipal: {
     type: String, // URL de Cloudinary
     required: [true, 'La imagen principal es obligatoria']
   },
   galeria: [String], // Array de URLs de Cloudinary
   servicios: [String], // Ejemplo: ['WiFi', 'Piscina', 'Desayuno']
-  
+
   // Datos de Contacto y Configuración
   contactoEmail: {
     type: String,
@@ -44,7 +41,7 @@ const hospedajeSchema = new mongoose.Schema({
     enum: ['pendiente', 'aprobado', 'rechazado', 'suspendido'],
     default: 'pendiente'
   },
-  
+
   // Referencia al Administrador del Hospedaje (Dueño)
   administrador: {
     type: mongoose.Schema.Types.ObjectId,
@@ -52,7 +49,7 @@ const hospedajeSchema = new mongoose.Schema({
     required: true
   }
 }, {
-  timestamps: true 
+  timestamps: true
 });
 
 const Hospedaje = mongoose.model('Hospedaje', hospedajeSchema);
