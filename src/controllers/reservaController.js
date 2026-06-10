@@ -90,7 +90,7 @@ const reservaController = {
 
   listarPorUsuario: async (req, res) => {
     try {
-      const reservas = await Reserva.find({ usuario: req.user.id }).populate('hospedaje habitacion');
+      const reservas = await reservaService.listarPorUsuario(req.user.id);
       res.json(reservas);
     } catch (error) {
       res.status(500).json({ mensaje: 'Error al obtener reservas' });
