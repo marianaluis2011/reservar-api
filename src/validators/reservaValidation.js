@@ -5,6 +5,7 @@ const baseReservaSchema = z.object({
   habitacion: z.string().regex(/^[0-9a-fA-F]{24}$/, "ID de habitación inválido"),
   fechaEntrada: z.string().pipe(z.coerce.date()),
   fechaSalida: z.string().pipe(z.coerce.date()),
+  cantidadPersonas: z.number().min(1, "Debe haber al menos una persona"),
   usuario: z.string().regex(/^[0-9a-fA-F]{24}$/, "ID de usuario inválido").optional(), // Temporal hasta JWT
 });
 
