@@ -4,6 +4,7 @@ import authRoutes from './routes/auth.routes.js';
 import hospedajeRoutes from './routes/hospedaje.routes.js';
 import habitacionRoutes from './routes/habitacion.routes.js';
 import reservaRoutes from './routes/reserva.routes.js';
+import provinciaRoutes from './routes/provincia.routes.js';
 import { validateJwt } from './middlewares/validateJwt.js'; // Importar el middleware de validación JWT
 import dotenv from 'dotenv';
 
@@ -40,6 +41,7 @@ app.get('/api/protected', validateJwt, (req, res) => {
 // Activamos las rutas de la aplicación
 app.use('/api/hospedajes', hospedajeRoutes);
 app.use('/api/habitaciones', habitacionRoutes);
+app.use('/api/provincias', provinciaRoutes);
 app.use('/api/reservas', validateJwt, reservaRoutes); // Las reservas requieren login
 
 // Middleware para capturar rutas no encontradas y ver qué URL falló

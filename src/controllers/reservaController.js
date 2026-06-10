@@ -60,9 +60,37 @@ const reservaController = {
     }
   },
 
+  obtenerDetalle: async (req, res) => {
+    try {
+      const reserva = await Reserva.findOne({ 
+        _id: req.params.id, 
+        usuario: req.user.id 
+      }).populate('hospedaje habitacion');
+      
+      if (!reserva) return res.status(404).json({ mensaje: 'Reserva no encontrada' });
+      res.json(reserva);
+    } catch (error) {
+      res.status(500).json({ mensaje: 'Error al obtener el detalle' });
+    }
+  },
+
+  cancelar: async (req, res) => {
+    try {
+      const reserva = await Reserva.findOneAndUpdate(
+        { _id: req.params.id, usuario: req.user.id },
+        { estado: 'cancelada' },
+        { new: true }
+      );
+      if (!reserva) return res.status(404).json({ mensaje: 'Reserva no encontrada o no tienes permiso' });
+      res.json({ mensaje: 'Reserva cancelada correctamente', reserva });
+    } catch (error) {
+      res.status(500).json({ mensaje: 'Error al cancelar la reserva' });
+    }
+  },
+
   listarPorUsuario: async (req, res) => {
     try {
-      const reservas = await Reserva.find({ usuario: req.params.usuarioId }).populate('hospedaje habitacion');
+      const reservas = await Reserva.find({ usuario: req.user.id }).populate('hospedaje habitacion');
       res.json(reservas);
     } catch (error) {
       res.status(500).json({ mensaje: 'Error al obtener reservas' });
