@@ -4,9 +4,15 @@ const hospedajeController = {
 
   registrar: async (req, res) => {
     try {
+      // Si es super_admin, puede asignar un administrador específico enviado en el body.
+      // De lo contrario, se asigna automáticamente el usuario logueado.
+      const adminId = (req.user.rol === 'super_admin' && req.body.administrador) 
+        ? req.body.administrador 
+        : req.user.id;
+
       const nuevoHospedaje = new Hospedaje({
         ...req.body,
-        administrador: req.user.id
+        administrador: adminId
       });
       await nuevoHospedaje.save();
       res.status(201).json({ message: 'Hospedaje creado con éxito y asignado al administrador', hospedaje: nuevoHospedaje });
@@ -36,8 +42,14 @@ const hospedajeController = {
 
   actualizar: async (req, res) => {
     try {
+      const filtro = { _id: req.params.id };
+      // Si no es super_admin, solo puede actualizar sus propios hospedajes
+      if (req.user.rol !== 'super_admin') {
+        filtro.administrador = req.user.id;
+      }
+
       const actualizado = await Hospedaje.findOneAndUpdate(
-        { _id: req.params.id },
+        filtro,
         req.body,
         { returnDocument: 'after' }
       );
@@ -52,7 +64,13 @@ const hospedajeController = {
 
   eliminar: async (req, res) => {
     try {
-      const eliminado = await Hospedaje.findByIdAndDelete(req.params.id);
+      const filtro = { _id: req.params.id };
+      // Si no es super_admin, solo puede eliminar sus propios hospedajes
+      if (req.user.rol !== 'super_admin') {
+        filtro.administrador = req.user.id;
+      }
+
+      const eliminado = await Hospedaje.findOneAndDelete(filtro);
       if (!eliminado) return res.status(404).json({ message: 'Hospedaje no encontrado o no tienes permiso' });
       res.json({ message: 'Hospedaje eliminado correctamente' });
     } catch (error) {
