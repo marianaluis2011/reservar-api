@@ -28,7 +28,7 @@ const reservaController = {
       }
 
       if (habitacionDoc.estado !== 'activa') {
-        return res.status(400).json({ message: 'Esta habitación no está disponible actualmente' });
+        return res.status(400).json({ message: 'Esta habitación no se encuentra activa para reservas' });
       }
 
       const diferenciaDias = Math.max(1, Math.ceil((new Date(fechaSalida) - new Date(fechaEntrada)) / (1000 * 60 * 60 * 24)));
