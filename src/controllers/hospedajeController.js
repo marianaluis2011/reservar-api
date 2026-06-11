@@ -7,12 +7,9 @@ const hospedajeController = {
     try {
 
       const datosValidados = registroHospedajeSchema.parse(req.body);
-      const nuevoHospedaje = new Hospedaje({
-        ...datosValidados,
-        administrador: req.user.id
-      });
+      const nuevoHospedaje = new Hospedaje(datosValidados);
       await nuevoHospedaje.save();
-      res.status(201).json({ mensaje: 'Hospedaje registrado y pendiente de aprobación', hospedaje: nuevoHospedaje });
+      res.status(201).json({ mensaje: 'Hospedaje creado con éxito y asignado al administrador', hospedaje: nuevoHospedaje });
     } catch (error) {
       if (error.name === "ZodError") {
         return res.status(400).json({ mensaje: 'Error de validación', errores: error.errors });
@@ -46,7 +43,7 @@ const hospedajeController = {
   actualizar: async (req, res) => {
     try {
       const actualizado = await Hospedaje.findOneAndUpdate(
-        { _id: req.params.id, administrador: req.user.id }, // Filtro: Solo el dueño puede editar
+        { _id: req.params.id }, 
         req.body,
         { returnDocument: 'after' }
       );
@@ -63,10 +60,7 @@ const hospedajeController = {
 
   eliminar: async (req, res) => {
     try {
-      const eliminado = await Hospedaje.findOneAndDelete({ 
-        _id: req.params.id, 
-        administrador: req.user.id 
-      });
+      const eliminado = await Hospedaje.findByIdAndDelete(req.params.id);
       if (!eliminado) return res.status(404).json({ mensaje: 'Hospedaje no encontrado o no tienes permiso' });
       res.json({ mensaje: 'Hospedaje eliminado correctamente' });
     } catch (error) {

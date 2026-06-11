@@ -8,11 +8,14 @@ const habitacionController = {
     try {
       const datosValidados = habitacionSchema.parse(req.body);
 
-      // Seguridad: Verificar que el hospedaje pertenezca al admin logueado
-      const hospedajePropio = await Hospedaje.findOne({ 
-        _id: datosValidados.hospedaje, 
-        administrador: req.user.id 
-      });
+      // Seguridad: Verificar que el hospedaje pertenezca al admin logueado (o ser super_admin)
+      const filtro = { _id: datosValidados.hospedaje };
+      
+      if (req.user.rol !== 'super_admin') {
+        filtro.administrador = req.user.id;
+      }
+
+      const hospedajePropio = await Hospedaje.findOne(filtro);
 
       if (!hospedajePropio) {
         return res.status(403).json({ mensaje: 'No tienes permiso para agregar habitaciones a este hospedaje' });

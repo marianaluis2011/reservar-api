@@ -39,7 +39,7 @@ const hospedajeSchema = new mongoose.Schema({
   estado: {
     type: String,
     enum: ['pendiente', 'aprobado', 'rechazado', 'suspendido'],
-    default: 'pendiente'
+    default: 'aprobado'
   },
 
   // Referencia al Administrador del Hospedaje (Dueño)
