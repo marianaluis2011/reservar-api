@@ -7,7 +7,6 @@ import habitacionRoutes from './routes/habitacion.routes.js';
 import reservaRoutes from './routes/reserva.routes.js';
 import provinciaRoutes from './routes/provincia.routes.js';
 import { validateJwt } from './middlewares/validateJwt.js'; // Importar el middleware de validación JWT
-import { ZodError } from 'zod';
 
 const app = express();
 
@@ -31,7 +30,7 @@ app.use('/api/auth', authRoutes);
 // Rutas protegidas (ejemplo)
 app.get('/api/protected', validateJwt, (req, res) => {
   res.status(200).json({
-    mensaje: '¡Acceso concedido a la ruta protegida!',
+    message: '¡Acceso concedido a la ruta protegida!',
     usuario: req.user // Información del usuario decodificada del token
   });
 });
@@ -45,21 +44,14 @@ app.use('/api/reservas', validateJwt, reservaRoutes); // Las reservas requieren 
 // Middleware para capturar rutas no encontradas y ver qué URL falló
 app.use((req, res) => {
   console.log(`❌ 404 - Ruta no encontrada: ${req.method} ${req.originalUrl || req.url}`);
-  res.status(404).json({ mensaje: "Ruta no encontrada" });
+  res.status(404).json({ message: "Ruta no encontrada" });
 });
 
-// Manejador de errores global para Postman
+// Manejador de errores global
 app.use((err, req, res, next) => {
-  if (err instanceof ZodError) {
-    return res.status(400).json({
-      mensaje: 'Error de validación de datos',
-      errores: err.errors.map(e => ({ campo: e.path.join('.'), mensaje: e.message }))
-    });
-  }
-
-  console.error('🔥 Error no controlado:', err);
+  console.error('Error no controlado:', err);
   res.status(err.status || 500).json({
-    mensaje: err.message || 'Error interno del servidor'
+    message: err.message || 'Error interno del servidor'
   });
 });
 

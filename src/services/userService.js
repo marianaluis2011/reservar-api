@@ -1,14 +1,14 @@
 import User from '../models/user.js';
 
-class UserService {
-  static async createUser(userData) {
+const userService = {
+  createUser: async (userData) => {
     const user = new User(userData);
     return user.save();
-  }
+  },
 
-  static async findUserByEmail(email) {
+  findUserByEmail: async (email) => {
     return User.findOne({ email });
   }
-}
+};
 
-export default UserService;
+export default userService;
