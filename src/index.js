@@ -1,4 +1,5 @@
 import express from 'express';
+import config from './config/config.js';
 import conectarDB from './config/db.js';
 import authRoutes from './routes/auth.routes.js';
 import hospedajeRoutes from './routes/hospedaje.routes.js';
@@ -7,10 +8,6 @@ import reservaRoutes from './routes/reserva.routes.js';
 import provinciaRoutes from './routes/provincia.routes.js';
 import { validateJwt } from './middlewares/validateJwt.js'; // Importar el middleware de validación JWT
 import { ZodError } from 'zod';
-import dotenv from 'dotenv';
-
-dotenv.config();
-
 
 const app = express();
 
@@ -54,13 +51,18 @@ app.use((req, res) => {
 // Manejador de errores global para Postman
 app.use((err, req, res, next) => {
   if (err instanceof ZodError) {
-    return res.status(400).json({ mensaje: 'Error de validación', errores: err.errors });
+    return res.status(400).json({
+      mensaje: 'Error de validación de datos',
+      errores: err.errors.map(e => ({ campo: e.path.join('.'), mensaje: e.message }))
+    });
   }
-  console.error(err);
-  res.status(500).json({ mensaje: 'Error interno del servidor', error: err.message });
+
+  console.error('🔥 Error no controlado:', err);
+  res.status(err.status || 500).json({
+    mensaje: err.message || 'Error interno del servidor'
+  });
 });
 
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor de ReservaHost corriendo en http://localhost:${PORT}`);
+app.listen(config.port, () => {
+  console.log(`🚀 Servidor de ReservaHost corriendo en http://localhost:${config.port}`);
 });
