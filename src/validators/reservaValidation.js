@@ -10,7 +10,6 @@ const baseReservaSchema = z.object({
   }, { message: "La fecha de entrada no puede ser en el pasado" }),
   fechaSalida: z.string().pipe(z.coerce.date()),
   cantidadPersonas: z.number().min(1, "Debe haber al menos una persona"),
-  usuario: z.string().regex(/^[0-9a-fA-F]{24}$/, "ID de usuario inválido").optional(), // Temporal hasta JWT
 });
 
 export const reservaSchema = baseReservaSchema.refine((data) => data.fechaSalida > data.fechaEntrada, {

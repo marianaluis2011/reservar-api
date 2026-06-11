@@ -9,5 +9,4 @@ export const registroHospedajeSchema = z.object({
   telefonoWhatsapp: z.string().min(10, "El número de WhatsApp debe tener al menos 10 dígitos"),
   porcentajeSena: z.number().min(0).max(100).optional(),
   servicios: z.array(z.string()).optional(),
-  administrador: z.string().regex(/^[0-9a-fA-F]{24}$/, "ID de administrador inválido")
 });
