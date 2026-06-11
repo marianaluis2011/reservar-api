@@ -3,7 +3,11 @@ import { z } from 'zod';
 const baseReservaSchema = z.object({
   hospedaje: z.string().regex(/^[0-9a-fA-F]{24}$/, "ID de hospedaje inválido"),
   habitacion: z.string().regex(/^[0-9a-fA-F]{24}$/, "ID de habitación inválido"),
-  fechaEntrada: z.string().pipe(z.coerce.date()),
+  fechaEntrada: z.string().pipe(z.coerce.date()).refine((date) => {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    return date >= hoy;
+  }, { message: "La fecha de entrada no puede ser en el pasado" }),
   fechaSalida: z.string().pipe(z.coerce.date()),
   cantidadPersonas: z.number().min(1, "Debe haber al menos una persona"),
   usuario: z.string().regex(/^[0-9a-fA-F]{24}$/, "ID de usuario inválido").optional(), // Temporal hasta JWT
