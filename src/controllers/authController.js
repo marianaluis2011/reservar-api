@@ -1,4 +1,4 @@
-import userService from '../services/user.services.js';
+import userService from '../services/userService.js';
 import { generateToken } from '../libs/jwt.js';
 
 const authController = {

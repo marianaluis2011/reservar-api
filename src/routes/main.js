@@ -1,3 +1,0 @@
-const mainRouter = {}
-
-export{}
