@@ -2,50 +2,18 @@ import { Router } from 'express';
 import habitacionController from '../controllers/habitacionController.js';
 import { validateJwt } from '../middlewares/validateJwt.js';
 import { authorize } from '../middlewares/authorize.js';
-import { validate } from '../middlewares/validate.middlewares.js';
-import {
-    createRoomValidator,
-    updateRoomValidator,
-    roomIdParamValidator,
-} from '../validators/habitacionValidation.js';
+import { createRoomValidator, updateRoomValidator, roomIdParamValidator } from '../validators/habitacionValidation.js';
+import { validateResult } from '../middlewares/validateResult.js';
 
 const router = Router();
 
-router.post(
-    '/',
-    validateJwt,
-    authorize(['admin_hospedaje', 'super_admin']),
-    createRoomValidator,
-    validate,
-    habitacionController.crear
-);
+// Rutas públicas
+router.get('/hospedaje/:hospedajeId', roomIdParamValidator, validateResult, habitacionController.listarPorHospedaje); // Usamos roomIdParamValidator para validar hospedajeId como MongoId
+router.get('/:id', roomIdParamValidator, validateResult, habitacionController.obtenerDetalle);
 
-router.get('/hospedaje/:hospedajeId', habitacionController.listarPorHospedaje);
-
-router.get(
-    '/:id',
-    roomIdParamValidator,
-    validate,
-    habitacionController.obtenerDetalle
-);
-
-router.put(
-    '/:id',
-    validateJwt,
-    authorize(['admin_hospedaje', 'super_admin']),
-    roomIdParamValidator,
-    updateRoomValidator,
-    validate,
-    habitacionController.actualizar
-);
-
-router.delete(
-    '/:id',
-    validateJwt,
-    authorize(['admin_hospedaje', 'super_admin']),
-    roomIdParamValidator,
-    validate,
-    habitacionController.eliminar
-);
+// Rutas protegidas
+router.post('/', validateJwt, authorize(['admin_hospedaje', 'super_admin']), createRoomValidator, validateResult, habitacionController.crear);
+router.put('/:id', validateJwt, authorize(['admin_hospedaje', 'super_admin']), roomIdParamValidator, updateRoomValidator, validateResult, habitacionController.actualizar);
+router.delete('/:id', validateJwt, authorize(['admin_hospedaje', 'super_admin']), roomIdParamValidator, validateResult, habitacionController.eliminar);
 
 export default router;
