@@ -1,23 +1,55 @@
 import Reserva from '../models/reserva.js';
-import reservaService from '../services/reservaService.js'; // Importar el servicio
+import Habitacion from '../models/habitacion.js';
 import { reservaSchema } from '../validators/reservaValidation.js';
 
 const reservaController = {
   crear: async (req, res) => {
     try {
       const datosValidados = reservaSchema.parse(req.body);
+      const { habitacion, hospedaje, fechaEntrada, fechaSalida } = datosValidados;
 
-      // Delegamos la lógica compleja (validaciones, cálculo de precio, solapamiento) al servicio
-      const nuevaReserva = await reservaService.crear({
-        ...datosValidados,
-        usuario: req.user.id // El ID del usuario viene del token JWT
+      // 1. Obtener datos de la habitación y verificar pertenencia al hospedaje
+      const habitacionDoc = await Habitacion.findById(habitacion);
+      if (!habitacionDoc) return res.status(404).json({ mensaje: 'Habitación no encontrada' });
+      
+      if (habitacionDoc.hospedaje.toString() !== hospedaje) {
+        return res.status(400).json({ mensaje: 'La habitación no pertenece al hospedaje seleccionado' });
+      }
+
+      // 2. Verificar si hay reservas que se solapen
+      const reservaExistente = await Reserva.findOne({
+        habitacion,
+        estado: { $ne: 'cancelada' }, // Ignorar las canceladas
+        $or: [
+          { fechaEntrada: { $lt: fechaSalida }, fechaSalida: { $gt: fechaEntrada } }
+        ]
       });
 
+      if (reservaExistente) {
+        return res.status(400).json({ mensaje: 'La habitación ya está reservada en esas fechas' });
+      }
+
+      if (habitacionDoc.estado !== 'activa') {
+        return res.status(400).json({ mensaje: 'Esta habitación no está disponible actualmente' });
+      }
+
+      const diferenciaDias = Math.max(1, Math.ceil((new Date(fechaSalida) - new Date(fechaEntrada)) / (1000 * 60 * 60 * 24)));
+      const precioTotal = diferenciaDias * habitacionDoc.precioPorNoche;
+
+      const nuevaReserva = new Reserva({
+        ...datosValidados,
+        usuario: req.user.id, // Usamos el ID del token JWT
+        precioTotal
+      });
+
+      await nuevaReserva.save();
       res.status(201).json({ mensaje: 'Reserva creada con éxito', reserva: nuevaReserva });
 
     } catch (error) {
-      // El middleware global de errores (en index.js) manejará los ZodError y otros errores lanzados por el servicio
-      throw error; 
+      if (error.name === "ZodError") {
+        return res.status(400).json({ mensaje: 'Error de validación', errores: error.errors });
+      }
+      res.status(500).json({ mensaje: 'Error al procesar la reserva', error: error.message });
     }
   },
 
@@ -51,7 +83,7 @@ const reservaController = {
 
   listarPorUsuario: async (req, res) => {
     try {
-      const reservas = await reservaService.listarPorUsuario(req.user.id);
+      const reservas = await Reserva.find({ usuario: req.user.id }).populate('hospedaje habitacion');
       res.json(reservas);
     } catch (error) {
       res.status(500).json({ mensaje: 'Error al obtener reservas' });
