@@ -6,33 +6,16 @@ import {
   createBookingValidator,
   bookingIdParamValidator,
 } from '../validators/reservaValidation.js';
+import { createBookingValidator, bookingIdParamValidator } from '../validators/reservaValidation.js';
+import { validateResult } from '../middlewares/validateResult.js';
 
 const router = Router();
 
-router.post(
-  '/',
-  validateJwt,
-  createBookingValidator,
-  validate,
-  reservaController.crear
-);
+// Todas estas rutas ya están protegidas por `validateJwt` en `index.js`
 
-router.get('/', validateJwt, reservaController.listarPorUsuario);
-
-router.get(
-  '/:id',
-  validateJwt,
-  bookingIdParamValidator,
-  validate,
-  reservaController.obtenerDetalle
-);
-
-router.patch(
-  '/:id/cancelar',
-  validateJwt,
-  bookingIdParamValidator,
-  validate,
-  reservaController.cancelar
-);
+router.post('/', createBookingValidator, validateResult, reservaController.crear);
+router.get('/:id', bookingIdParamValidator, validateResult, reservaController.obtenerDetalle);
+router.get('/', reservaController.listarPorUsuario);
+router.patch('/:id/cancelar', bookingIdParamValidator, validateResult, reservaController.cancelar);
 
 export default router;
