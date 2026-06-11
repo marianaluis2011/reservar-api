@@ -7,7 +7,6 @@ import habitacionRoutes from './routes/habitacion.routes.js';
 import reservaRoutes from './routes/reserva.routes.js';
 import provinciaRoutes from './routes/provincia.routes.js';
 import { validateJwt } from './middlewares/validateJwt.js'; // Importar el middleware de validación JWT
-import { ZodError } from 'zod';
 
 const app = express();
 
@@ -48,16 +47,9 @@ app.use((req, res) => {
   res.status(404).json({ mensaje: "Ruta no encontrada" });
 });
 
-// Manejador de errores global para Postman
+// Manejador de errores global
 app.use((err, req, res, next) => {
-  if (err instanceof ZodError) {
-    return res.status(400).json({
-      mensaje: 'Error de validación de datos',
-      errores: err.errors.map(e => ({ campo: e.path.join('.'), mensaje: e.message }))
-    });
-  }
-
-  console.error('🔥 Error no controlado:', err);
+  console.error('Error no controlado:', err);
   res.status(err.status || 500).json({
     mensaje: err.message || 'Error interno del servidor'
   });
