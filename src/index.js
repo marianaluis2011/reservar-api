@@ -49,12 +49,6 @@ app.use((req, res) => {
 
 // Manejador de errores global
 app.use((err, req, res, next) => {
-  if (err instanceof ZodError) {
-    return res.status(400).json({
-      mensaje: 'Error de validación de datos',
-      errores: err.errors.map(e => ({ campo: e.path.join('.'), mensaje: e.message }))
-    });
-  }
   console.error('Error no controlado:', err);
   res.status(err.status || 500).json({
     mensaje: err.message || 'Error interno del servidor'
