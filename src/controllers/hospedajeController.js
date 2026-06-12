@@ -1,4 +1,5 @@
 import Hospedaje from '../models/hospedaje.js';
+import { cloudinary } from '../config/cloudinary.js';
 
 const hospedajeController = {
 
@@ -74,9 +75,31 @@ const hospedajeController = {
         filtro.administrador = req.user.id;
       }
 
-      const eliminado = await Hospedaje.findOneAndDelete(filtro);
-      if (!eliminado) return res.status(404).json({ message: 'Hospedaje no encontrado o no tienes permiso' });
-      res.json({ message: 'Hospedaje eliminado correctamente' });
+      const hospedaje = await Hospedaje.findOne(filtro);
+      if (!hospedaje) return res.status(404).json({ mensaje: 'Hospedaje no encontrado o no tienes permiso' });
+
+      // Función auxiliar para extraer el public_id de la URL
+      const extraerPublicId = (url) => {
+        const parts = url.split('/');
+        const folder = parts[parts.length - 2];
+        const fileName = parts[parts.length - 1].split('.')[0];
+        return `${folder}/${fileName}`;
+      };
+
+      // Eliminar imagen principal de Cloudinary
+      await cloudinary.uploader.destroy(extraerPublicId(hospedaje.imagenPrincipal));
+
+      // Eliminar galería de Cloudinary
+      if (hospedaje.galeria && hospedaje.galeria.length > 0) {
+        const deletionPromises = hospedaje.galeria.map(url => 
+          cloudinary.uploader.destroy(extraerPublicId(url))
+        );
+        await Promise.all(deletionPromises);
+      }
+
+      await Hospedaje.deleteOne({ _id: hospedaje._id });
+
+      res.json({ mensaje: 'Hospedaje eliminado correctamente' });
     } catch (error) {
       res.status(500).json({ message: 'Error al eliminar el hospedaje' });
     }

@@ -1,5 +1,6 @@
 import Habitacion from '../models/habitacion.js';
 import Hospedaje from '../models/hospedaje.js';
+import { cloudinary } from '../config/cloudinary.js';
 
 const habitacionController = {
 
@@ -87,6 +88,21 @@ const habitacionController = {
 
       if (habitacion.hospedaje.administrador.toString() !== req.user.id && req.user.rol !== 'super_admin') {
         return res.status(403).json({ message: 'No tienes permiso para eliminar esta habitación' });
+      }
+
+      // Eliminar imágenes de Cloudinary
+      if (habitacion.imagenes && habitacion.imagenes.length > 0) {
+        const extraerPublicId = (url) => {
+          const parts = url.split('/');
+          const folder = parts[parts.length - 2];
+          const fileName = parts[parts.length - 1].split('.')[0];
+          return `${folder}/${fileName}`;
+        };
+
+        const deletionPromises = habitacion.imagenes.map(url => 
+          cloudinary.uploader.destroy(extraerPublicId(url))
+        );
+        await Promise.all(deletionPromises);
       }
 
       await Habitacion.findByIdAndDelete(req.params.id);
