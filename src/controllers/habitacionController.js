@@ -1,6 +1,6 @@
 import Habitacion from '../models/habitacion.js';
 import Hospedaje from '../models/hospedaje.js';
-import { cloudinary } from '../config/cloudinary.js';
+import { cloudinary, extraerPublicId } from '../config/cloudinary.js';
 
 const habitacionController = {
 
@@ -92,13 +92,6 @@ const habitacionController = {
 
       // Eliminar imágenes de Cloudinary
       if (habitacion.imagenes && habitacion.imagenes.length > 0) {
-        const extraerPublicId = (url) => {
-          const parts = url.split('/');
-          const folder = parts[parts.length - 2];
-          const fileName = parts[parts.length - 1].split('.')[0];
-          return `${folder}/${fileName}`;
-        };
-
         const deletionPromises = habitacion.imagenes.map(url => 
           cloudinary.uploader.destroy(extraerPublicId(url))
         );

@@ -18,6 +18,17 @@ const storage = new CloudinaryStorage({
   },
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({ 
+  storage: storage,
+  limits: { fileSize: 2 * 1024 * 1024 } // Límite de 2MB por archivo
+});
 
-export { cloudinary, upload };
+const extraerPublicId = (url) => {
+  if (!url || typeof url !== 'string') return null;
+  const parts = url.split('/');
+  const folder = parts[parts.length - 2];
+  const fileName = parts[parts.length - 1].split('.')[0];
+  return `${folder}/${fileName}`;
+};
+
+export { cloudinary, upload, extraerPublicId };

@@ -1,5 +1,5 @@
 import Hospedaje from '../models/hospedaje.js';
-import { cloudinary } from '../config/cloudinary.js';
+import { cloudinary, extraerPublicId } from '../config/cloudinary.js';
 
 const hospedajeController = {
 
@@ -77,14 +77,6 @@ const hospedajeController = {
 
       const hospedaje = await Hospedaje.findOne(filtro);
       if (!hospedaje) return res.status(404).json({ mensaje: 'Hospedaje no encontrado o no tienes permiso' });
-
-      // Función auxiliar para extraer el public_id de la URL
-      const extraerPublicId = (url) => {
-        const parts = url.split('/');
-        const folder = parts[parts.length - 2];
-        const fileName = parts[parts.length - 1].split('.')[0];
-        return `${folder}/${fileName}`;
-      };
 
       // Eliminar imagen principal de Cloudinary
       await cloudinary.uploader.destroy(extraerPublicId(hospedaje.imagenPrincipal));

@@ -55,8 +55,10 @@ app.use((err, req, res, next) => {
     return res.status(400).json({
       mensaje: 'Error en la subida de archivos',
       error: err.code === 'LIMIT_UNEXPECTED_FILE' 
-        ? `Campo inesperado: "${err.field}". Asegúrate de usar 'imagenPrincipal' o 'galeria'.`
-        : err.message
+        ? `Campo inesperado: "${err.field}". Revisa los nombres de los campos de archivos.`
+        : err.code === 'LIMIT_FILE_SIZE'
+          ? 'El archivo es demasiado grande. El límite permitido es de 2MB.'
+          : err.message
     });
   }
   console.error('🔥 Error:', err.stack);
