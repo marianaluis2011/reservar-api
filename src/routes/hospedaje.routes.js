@@ -23,7 +23,18 @@ router.post(
   validateResult, 
   hospedajeController.registrar
 );
-router.put('/:id', validateJwt, authorize(['admin_hospedaje', 'super_admin']), accommodationIdParamValidator, updateAccommodationValidator, validateResult, hospedajeController.actualizar);
+
+router.put(
+  '/:id', 
+  validateJwt, 
+  authorize(['admin_hospedaje', 'super_admin']), 
+  upload.fields([{ name: 'imagenPrincipal', maxCount: 1 }, { name: 'galeria', maxCount: 5 }]),
+  accommodationIdParamValidator, 
+  updateAccommodationValidator, 
+  validateResult, 
+  hospedajeController.actualizar
+);
+
 router.delete('/:id', validateJwt, authorize(['admin_hospedaje', 'super_admin']), accommodationIdParamValidator, validateResult, hospedajeController.eliminar);
 
 export default router;
