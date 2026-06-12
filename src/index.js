@@ -51,7 +51,7 @@ app.use((req, res) => {
 app.use((err, req, res, next) => {
   console.error('Error no controlado:', err);
   res.status(err.status || 500).json({
-    message: err.message || 'Error interno del servidor'
+    mensaje: err.message || 'Error interno del servidor'
   });
 });
 

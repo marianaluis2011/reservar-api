@@ -4,9 +4,17 @@ const hospedajeController = {
 
   registrar: async (req, res) => {
     try {
+      // Extraemos administrador y estado del body. 
+      // El administrador se maneja aparte y el estado se ignora para usar el default 'aprobado' del modelo.
+      const { administrador, estado, ...datosHospedaje } = req.body;
+
+      // Al ser ruta exclusiva de super_admin, permitimos asignar un administrador específico 
+      // enviado en el body o usar el ID del propio super_admin que crea el registro.
+      const adminId = administrador || req.user.id;
+
       const nuevoHospedaje = new Hospedaje({
-        ...req.body,
-        administrador: req.user.id
+        ...datosHospedaje,
+        administrador: adminId
       });
       await nuevoHospedaje.save();
       res.status(201).json({ message: 'Hospedaje creado con éxito y asignado al administrador', hospedaje: nuevoHospedaje });
@@ -36,8 +44,14 @@ const hospedajeController = {
 
   actualizar: async (req, res) => {
     try {
+      const filtro = { _id: req.params.id };
+      // Si no es super_admin, solo puede actualizar sus propios hospedajes
+      if (req.user.rol !== 'super_admin') {
+        filtro.administrador = req.user.id;
+      }
+
       const actualizado = await Hospedaje.findOneAndUpdate(
-        { _id: req.params.id },
+        filtro,
         req.body,
         { returnDocument: 'after' }
       );
@@ -52,7 +66,13 @@ const hospedajeController = {
 
   eliminar: async (req, res) => {
     try {
-      const eliminado = await Hospedaje.findByIdAndDelete(req.params.id);
+      const filtro = { _id: req.params.id };
+      // Si no es super_admin, solo puede eliminar sus propios hospedajes
+      if (req.user.rol !== 'super_admin') {
+        filtro.administrador = req.user.id;
+      }
+
+      const eliminado = await Hospedaje.findOneAndDelete(filtro);
       if (!eliminado) return res.status(404).json({ message: 'Hospedaje no encontrado o no tienes permiso' });
       res.json({ message: 'Hospedaje eliminado correctamente' });
     } catch (error) {

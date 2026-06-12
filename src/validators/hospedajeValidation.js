@@ -31,6 +31,9 @@ export const createAccommodationValidator = [
   body('servicios')
     .optional()
     .isArray().withMessage('Los servicios deben ser un arreglo'),
+  body('administrador')
+    .optional()
+    .isMongoId().withMessage('ID de administrador inválido'),
 ];
 
 export const updateAccommodationValidator = [
@@ -42,6 +45,7 @@ export const updateAccommodationValidator = [
   body('telefonoWhatsapp').optional().isLength({ min: 10 }).withMessage('El número de WhatsApp debe tener al menos 10 dígitos'),
   body('porcentajeSena').optional().isFloat({ min: 0, max: 100 }).withMessage('El porcentaje de seña debe estar entre 0 y 100'),
   body('servicios').optional().isArray().withMessage('Los servicios deben ser un arreglo'),
+  body('administrador').optional().isMongoId().withMessage('ID de administrador inválido'),
 ];
 
 export const accommodationIdParamValidator = [
