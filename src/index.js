@@ -16,6 +16,7 @@ conectarDB();
 
 // Middlewares para procesar JSON
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Logger para ver todas las peticiones que llegan
 app.use((req, res, next) => {

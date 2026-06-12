@@ -2,11 +2,11 @@ import { body, param } from 'express-validator';
 
 export const createAccommodationValidator = [
   body('nombre')
-    .notEmpty().withMessage('Falta el campo nombre')
+    .notEmpty().withMessage('El nombre es obligatorio')
     .bail()
     .isLength({ min: 3 }).withMessage('El nombre debe tener al menos 3 caracteres'),
   body('descripcion')
-    .notEmpty().withMessage('Falta el campo descripción')
+    .notEmpty().withMessage('La descripción es obligatoria')
     .bail()
     .isLength({ min: 10 }).withMessage('La descripción es demasiado corta'),
   body('provincia')
