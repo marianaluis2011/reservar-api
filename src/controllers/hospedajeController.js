@@ -4,17 +4,15 @@ const hospedajeController = {
 
   registrar: async (req, res) => {
     try {
-      // Extraemos administrador y estado del body. 
-      // El administrador se maneja aparte y el estado se ignora para usar el default 'aprobado' del modelo.
-      const { administrador, estado, ...datosHospedaje } = req.body;
-
-      // Al ser ruta exclusiva de super_admin, permitimos asignar un administrador específico 
-      // enviado en el body o usar el ID del propio super_admin que crea el registro.
-      const adminId = administrador || req.user.id;
+      // Capturar URLs de Cloudinary desde req.files
+      const imagenPrincipal = req.files?.imagenPrincipal ? req.files.imagenPrincipal[0].path : req.body.imagenPrincipal;
+      const galeria = req.files?.galeria ? req.files.galeria.map(file => file.path) : [];
 
       const nuevoHospedaje = new Hospedaje({
-        ...datosHospedaje,
-        administrador: adminId
+        ...req.body,
+        imagenPrincipal,
+        galeria,
+        administrador: req.user.id // En una PR anterior definimos que solo super_admin crea, pero podemos asignar admin
       });
       await nuevoHospedaje.save();
       res.status(201).json({ message: 'Hospedaje creado con éxito y asignado al administrador', hospedaje: nuevoHospedaje });
