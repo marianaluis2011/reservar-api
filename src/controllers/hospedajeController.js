@@ -8,11 +8,15 @@ const hospedajeController = {
       const imagenPrincipal = req.files?.imagenPrincipal ? req.files.imagenPrincipal[0].path : req.body.imagenPrincipal;
       const galeria = req.files?.galeria ? req.files.galeria.map(file => file.path) : [];
 
+      // Si viene un administrador en el body, lo usamos (útil para super_admin), 
+      // si no, se asigna al usuario que crea la petición.
+      const adminId = req.body.administrador || req.user.id;
+
       const nuevoHospedaje = new Hospedaje({
         ...req.body,
         imagenPrincipal,
         galeria,
-        administrador: req.user.id // En una PR anterior definimos que solo super_admin crea, pero podemos asignar admin
+        administrador: adminId
       });
       await nuevoHospedaje.save();
       res.status(201).json({ message: 'Hospedaje creado con éxito y asignado al administrador', hospedaje: nuevoHospedaje });
