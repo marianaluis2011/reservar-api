@@ -14,8 +14,7 @@ export const createAccommodationValidator = [
     .bail()
     .isMongoId().withMessage('ID de provincia inválido'),
   body('imagenPrincipal')
-    .notEmpty().withMessage('Falta la imagen principal')
-    .bail()
+    .optional()
     .isURL().withMessage('La imagen principal debe ser una URL válida'),
   body('contactoEmail')
     .notEmpty().withMessage('Falta el email de contacto')
