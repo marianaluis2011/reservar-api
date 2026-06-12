@@ -2,13 +2,13 @@ import { Router } from 'express';
 import habitacionController from '../controllers/habitacionController.js';
 import { validateJwt } from '../middlewares/validateJwt.js';
 import { authorize } from '../middlewares/authorize.js';
-import { createRoomValidator, updateRoomValidator, roomIdParamValidator } from '../validators/habitacionValidation.js';
+import { createRoomValidator, updateRoomValidator, roomIdParamValidator, hospedajeIdParamValidator } from '../validators/habitacionValidation.js';
 import { validateResult } from '../middlewares/validateResult.js';
 
 const router = Router();
 
 // Rutas públicas
-router.get('/hospedaje/:hospedajeId', roomIdParamValidator, validateResult, habitacionController.listarPorHospedaje); // Usamos roomIdParamValidator para validar hospedajeId como MongoId
+router.get('/hospedaje/:hospedajeId', hospedajeIdParamValidator, validateResult, habitacionController.listarPorHospedaje);
 router.get('/:id', roomIdParamValidator, validateResult, habitacionController.obtenerDetalle);
 
 // Rutas protegidas

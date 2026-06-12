@@ -4,14 +4,16 @@ const hospedajeController = {
 
   registrar: async (req, res) => {
     try {
-      // Si es super_admin, puede asignar un administrador específico enviado en el body.
-      // De lo contrario, se asigna automáticamente el usuario logueado.
-      const adminId = (req.user.rol === 'super_admin' && req.body.administrador) 
-        ? req.body.administrador 
-        : req.user.id;
+      // Extraemos administrador y estado del body. 
+      // El administrador se maneja aparte y el estado se ignora para usar el default 'aprobado' del modelo.
+      const { administrador, estado, ...datosHospedaje } = req.body;
+
+      // Al ser ruta exclusiva de super_admin, permitimos asignar un administrador específico 
+      // enviado en el body o usar el ID del propio super_admin que crea el registro.
+      const adminId = administrador || req.user.id;
 
       const nuevoHospedaje = new Hospedaje({
-        ...req.body,
+        ...datosHospedaje,
         administrador: adminId
       });
       await nuevoHospedaje.save();

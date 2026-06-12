@@ -35,3 +35,7 @@ export const updateRoomValidator = [
 export const roomIdParamValidator = [
   param('id').isMongoId().withMessage('ID de habitación inválido')
 ];
+
+export const hospedajeIdParamValidator = [
+  param('hospedajeId').isMongoId().withMessage('ID de hospedaje inválido')
+];

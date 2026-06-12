@@ -12,7 +12,7 @@ router.get('/', hospedajeController.listarPublico);
 router.get('/:id', accommodationIdParamValidator, validateResult, hospedajeController.obtenerDetalle);
 
 // Rutas protegidas
-router.post('/', validateJwt, authorize(['admin_hospedaje', 'super_admin']), createAccommodationValidator, validateResult, hospedajeController.registrar);
+router.post('/', validateJwt, authorize(['super_admin']), createAccommodationValidator, validateResult, hospedajeController.registrar);
 router.put('/:id', validateJwt, authorize(['admin_hospedaje', 'super_admin']), accommodationIdParamValidator, updateAccommodationValidator, validateResult, hospedajeController.actualizar);
 router.delete('/:id', validateJwt, authorize(['admin_hospedaje', 'super_admin']), accommodationIdParamValidator, validateResult, hospedajeController.eliminar);
 
