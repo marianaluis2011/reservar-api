@@ -47,14 +47,6 @@ app.use((req, res) => {
   res.status(404).json({ message: "Ruta no encontrada" });
 });
 
-// Manejador de errores global
-app.use((err, req, res, next) => {
-  console.error('Error no controlado:', err);
-  res.status(err.status || 500).json({
-    mensaje: err.message || 'Error interno del servidor'
-  });
-});
-
 app.listen(config.port, () => {
   console.log(`🚀 Servidor de ReservaHost corriendo en http://localhost:${config.port}`);
 });
