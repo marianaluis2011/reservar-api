@@ -7,6 +7,7 @@ import habitacionRoutes from './routes/habitacion.routes.js';
 import reservaRoutes from './routes/reserva.routes.js';
 import provinciaRoutes from './routes/provincia.routes.js';
 import { validateJwt } from './middlewares/validateJwt.js'; // Importar el middleware de validación JWT
+import multer from 'multer';
 
 const app = express();
 
@@ -49,6 +50,14 @@ app.use((req, res) => {
 
 // Manejador de errores global
 app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({
+      mensaje: 'Error en la subida de archivos',
+      error: err.code === 'LIMIT_UNEXPECTED_FILE' 
+        ? `Campo inesperado: "${err.field}". Asegúrate de usar 'imagenPrincipal' o 'galeria'.`
+        : err.message
+    });
+  }
   console.error('🔥 Error:', err.stack);
   res.status(500).json({ mensaje: 'Error interno del servidor', error: err.message });
 });
