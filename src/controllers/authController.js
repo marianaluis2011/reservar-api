@@ -13,13 +13,12 @@ const authController = {
         return res.status(409).json({ message: 'El correo electrónico ya está registrado.' });
       }
       const newUser = await userService.createUser({ nombre, apellido, email, password, rol });
-      const token = generateToken({ id: newUser._id, email: newUser.email, rol: newUser.rol });
-      res.status(201).json({ message: 'Usuario registrado exitosamente.', token });
+      res.status(201).json({ message: 'Usuario registrado exitosamente.'});
     } catch (error) {
       res.status(500).json({ message: 'Error al registrar usuario', error: error.message });
     }
   },
-
+  
   login: async (req, res) => {
     try {
       const { email, password } = req.body;
