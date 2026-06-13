@@ -29,7 +29,7 @@ const hospedajeController = {
   listarPublico: async (req, res) => {
     try {
       const hospedajes = await Hospedaje.find({ estado: 'aprobado' }).populate('provincia', 'nombre');
-      res.json(hospedajes);
+      res.status(200).json(hospedajes);
     } catch (error) {
       res.status(500).json({ message: 'Error al obtener los hospedajes' });
     }
@@ -39,7 +39,7 @@ const hospedajeController = {
     try {
       const hospedaje = await Hospedaje.findById(req.params.id).populate('provincia', 'nombre');
       if (!hospedaje) return res.status(404).json({ message: 'Hospedaje no encontrado' });
-      res.json(hospedaje);
+      res.status(200).json(hospedaje);
     } catch (error) {
       res.status(500).json({ message: 'Error en el servidor' });
     }
@@ -47,21 +47,15 @@ const hospedajeController = {
 
   actualizar: async (req, res) => {
     try {
-      const filtro = { _id: req.params.id };
-      // Si no es super_admin, solo puede actualizar sus propios hospedajes
-      if (req.user.rol !== 'super_admin') {
-        filtro.administrador = req.user.id;
-      }
-
       const actualizado = await Hospedaje.findOneAndUpdate(
-        filtro,
+        { _id: req.params.id },
         req.body,
         { returnDocument: 'after' }
       );
       if (!actualizado) {
         return res.status(404).json({ message: 'Hospedaje no encontrado o no tienes permiso para editarlo' });
       }
-      res.json(actualizado);
+      res.status(200).json(actualizado);
     } catch (error) {
       res.status(400).json({ message: 'Error al actualizar el hospedaje', error: error.message });
     }
