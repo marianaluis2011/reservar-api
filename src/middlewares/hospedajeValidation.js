@@ -4,11 +4,11 @@ export const createAccommodationValidator = [
   body('nombre')
     .notEmpty().withMessage('El nombre es obligatorio')
     .bail()
-    .isLength({ min: 3 }).withMessage('El nombre debe tener al menos 3 caracteres'),
+    .isLength({ min: 3, max: 100 }).withMessage('El nombre debe tener entre 3 y 100 caracteres'),
   body('descripcion')
     .notEmpty().withMessage('La descripción es obligatoria')
     .bail()
-    .isLength({ min: 10 }).withMessage('La descripción es demasiado corta'),
+    .isLength({ min: 10, max: 1000 }).withMessage('La descripción debe tener entre 10 y 1000 caracteres'),
   body('provincia')
     .notEmpty().withMessage('Falta el ID de provincia')
     .bail()
@@ -23,7 +23,7 @@ export const createAccommodationValidator = [
   body('telefonoWhatsapp')
     .notEmpty().withMessage('Falta el número de WhatsApp')
     .bail()
-    .isLength({ min: 10 }).withMessage('El número de WhatsApp debe tener al menos 10 dígitos'),
+    .isLength({ min: 10, max: 20 }).withMessage('El número de WhatsApp debe tener entre 10 y 20 dígitos'),
   body('porcentajeSena')
     .optional()
     .isFloat({ min: 0, max: 100 }).withMessage('El porcentaje de seña debe estar entre 0 y 100'),
@@ -32,21 +32,30 @@ export const createAccommodationValidator = [
     .isArray().withMessage('Los servicios deben ser un arreglo'),
   body('administrador')
     .optional()
-    .isMongoId().withMessage('ID de administrador inválido'),
+    .isMongoId().withMessage('ID de administrador inválido')
 ];
 
 export const updateAccommodationValidator = [
-  body('nombre').optional().isLength({ min: 3 }).withMessage('El nombre debe tener al menos 3 caracteres'),
-  body('descripcion').optional().isLength({ min: 10 }).withMessage('La descripción es demasiado corta'),
-  body('provincia').optional().isMongoId().withMessage('ID de provincia inválido'),
-  body('imagenPrincipal').optional().isURL().withMessage('La imagen principal debe ser una URL válida'),
-  body('contactoEmail').optional().isEmail().withMessage('El formato del email es inválido'),
-  body('telefonoWhatsapp').optional().isLength({ min: 10 }).withMessage('El número de WhatsApp debe tener al menos 10 dígitos'),
-  body('porcentajeSena').optional().isFloat({ min: 0, max: 100 }).withMessage('El porcentaje de seña debe estar entre 0 y 100'),
-  body('servicios').optional().isArray().withMessage('Los servicios deben ser un arreglo'),
-  body('administrador').optional().isMongoId().withMessage('ID de administrador inválido'),
+  body('nombre').optional()
+    .isLength({ min: 3, max: 100 }).withMessage('El nombre debe tener entre 3 y 100 caracteres'),
+  body('descripcion').optional()
+    .isLength({ min: 10, max: 1000 }).withMessage('La descripción debe tener entre 10 y 1000 caracteres'),
+  body('provincia').optional()
+    .isMongoId().withMessage('ID de provincia inválido'),
+  body('imagenPrincipal').optional()
+    .isURL().withMessage('La imagen principal debe ser una URL válida'),
+  body('contactoEmail').optional()
+    .isEmail().withMessage('El formato del email es inválido'),
+  body('telefonoWhatsapp').optional()
+    .isLength({ min: 10, max: 20 }).withMessage('El número de WhatsApp debe tener entre 10 y 20 dígitos'),
+  body('porcentajeSena').optional()
+    .isFloat({ min: 0, max: 100 }).withMessage('El porcentaje de seña debe estar entre 0 y 100'),
+  body('servicios').optional()
+    .isArray().withMessage('Los servicios deben ser un arreglo'),
+  body('administrador').optional()
+    .isMongoId().withMessage('ID de administrador inválido')
 ];
 
 export const accommodationIdParamValidator = [
-  param('id').isMongoId().withMessage('ID de hospedaje inválido'),
+  param('id').isMongoId().withMessage('ID de hospedaje inválido')
 ];

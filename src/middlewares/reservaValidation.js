@@ -35,9 +35,9 @@ export const createBookingValidator = [
         throw new Error('La fecha de salida debe ser posterior a la de entrada');
       }
       return true;
-    }),
+    })
 ];
 
 export const bookingIdParamValidator = [
-  param('id').isMongoId().withMessage('ID de reserva inválido'),
+  param('id').isMongoId().withMessage('ID de reserva inválido')
 ];
