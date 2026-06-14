@@ -2,7 +2,7 @@ import { Router } from 'express';
 import hospedajeController from '../controllers/hospedajeController.js';
 import { validateJwt } from '../middlewares/validateJwt.js';
 import { authorize } from '../middlewares/authorize.js';
-import { createAccommodationValidator, updateAccommodationValidator, accommodationIdParamValidator } from '../validators/hospedajeValidation.js';
+import { createAccommodationValidator, updateAccommodationValidator, accommodationIdParamValidator } from '../middlewares/hospedajeValidation.js';
 import { validateResult } from '../middlewares/validateResult.js';
 import { upload } from '../config/cloudinary.js';
 
