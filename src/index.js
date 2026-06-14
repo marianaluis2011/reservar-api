@@ -7,6 +7,7 @@ import habitacionRoutes from './routes/habitacion.routes.js';
 import reservaRoutes from './routes/reserva.routes.js';
 import provinciaRoutes from './routes/provincia.routes.js';
 import { validateJwt } from './middlewares/validateJwt.js'; // Importar el middleware de validación JWT
+import multer from 'multer';
 
 const app = express();
 
@@ -15,6 +16,7 @@ conectarDB();
 
 // Middlewares para procesar JSON
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Logger para ver todas las peticiones que llegan
 app.use((req, res, next) => {
@@ -49,10 +51,18 @@ app.use((req, res) => {
 
 // Manejador de errores global
 app.use((err, req, res, next) => {
-  console.error('Error no controlado:', err);
-  res.status(err.status || 500).json({
-    mensaje: err.message || 'Error interno del servidor'
-  });
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({
+      mensaje: 'Error en la subida de archivos',
+      error: err.code === 'LIMIT_UNEXPECTED_FILE' 
+        ? `Campo inesperado: "${err.field}". Revisa los nombres de los campos de archivos.`
+        : err.code === 'LIMIT_FILE_SIZE'
+          ? 'El archivo es demasiado grande. El límite permitido es de 2MB.'
+          : err.message
+    });
+  }
+  console.error('🔥 Error:', err.stack);
+  res.status(500).json({ mensaje: 'Error interno del servidor', error: err.message });
 });
 
 app.listen(config.port, () => {

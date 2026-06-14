@@ -1,19 +1,22 @@
 import Hospedaje from '../models/hospedaje.js';
+import { cloudinary, extraerPublicId } from '../config/cloudinary.js';
 
 const hospedajeController = {
 
   registrar: async (req, res) => {
     try {
-      // Extraemos administrador y estado del body. 
-      // El administrador se maneja aparte y el estado se ignora para usar el default 'aprobado' del modelo.
-      const { administrador, estado, ...datosHospedaje } = req.body;
+      // Capturar URLs de Cloudinary desde req.files
+      const imagenPrincipal = req.files?.imagenPrincipal ? req.files.imagenPrincipal[0].path : req.body.imagenPrincipal;
+      const galeria = req.files?.galeria ? req.files.galeria.map(file => file.path) : [];
 
-      // Al ser ruta exclusiva de super_admin, permitimos asignar un administrador específico 
-      // enviado en el body o usar el ID del propio super_admin que crea el registro.
-      const adminId = administrador || req.user.id;
+      // Si viene un administrador en el body, lo usamos (útil para super_admin), 
+      // si no, se asigna al usuario que crea la petición.
+      const adminId = req.body.administrador || req.user.id;
 
       const nuevoHospedaje = new Hospedaje({
-        ...datosHospedaje,
+        ...req.body,
+        imagenPrincipal,
+        galeria,
         administrador: adminId
       });
       await nuevoHospedaje.save();
@@ -72,9 +75,23 @@ const hospedajeController = {
         filtro.administrador = req.user.id;
       }
 
-      const eliminado = await Hospedaje.findOneAndDelete(filtro);
-      if (!eliminado) return res.status(404).json({ message: 'Hospedaje no encontrado o no tienes permiso' });
-      res.json({ message: 'Hospedaje eliminado correctamente' });
+      const hospedaje = await Hospedaje.findOne(filtro);
+      if (!hospedaje) return res.status(404).json({ mensaje: 'Hospedaje no encontrado o no tienes permiso' });
+
+      // Eliminar imagen principal de Cloudinary
+      await cloudinary.uploader.destroy(extraerPublicId(hospedaje.imagenPrincipal));
+
+      // Eliminar galería de Cloudinary
+      if (hospedaje.galeria && hospedaje.galeria.length > 0) {
+        const deletionPromises = hospedaje.galeria.map(url => 
+          cloudinary.uploader.destroy(extraerPublicId(url))
+        );
+        await Promise.all(deletionPromises);
+      }
+
+      await Hospedaje.deleteOne({ _id: hospedaje._id });
+
+      res.json({ mensaje: 'Hospedaje eliminado correctamente' });
     } catch (error) {
       res.status(500).json({ message: 'Error al eliminar el hospedaje' });
     }

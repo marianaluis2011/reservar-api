@@ -1,5 +1,6 @@
 import Habitacion from '../models/habitacion.js';
 import Hospedaje from '../models/hospedaje.js';
+import { cloudinary, extraerPublicId } from '../config/cloudinary.js';
 
 const habitacionController = {
 
@@ -18,7 +19,14 @@ const habitacionController = {
         return res.status(403).json({ message: 'No tienes permiso para agregar habitaciones a este hospedaje' });
       }
 
-      const nuevaHabitacion = new Habitacion(req.body);
+      const imagenes = req.files ? req.files.map(file => file.path) : [];
+
+      const imagenes = req.files ? req.files.map(file => file.path) : [];
+
+      const nuevaHabitacion = new Habitacion({
+        ...req.body,
+        imagenes
+      });
       await nuevaHabitacion.save();
 
       res.status(201).json({ message: 'Habitación creada con éxito', habitacion: nuevaHabitacion });
@@ -54,12 +62,17 @@ const habitacionController = {
       if (!habitacion) return res.status(404).json({ message: 'Habitación no encontrada' });
 
       if (habitacion.hospedaje.administrador.toString() !== req.user.id && req.user.rol !== 'super_admin') {
-        return res.status(403).json({ message: 'No tienes permiso para editar esta habitación' });
+        return res.status(403).json({ mensaje: 'No tienes permiso para editar esta habitación' });
+      }
+
+      const datosActualizar = { ...req.body };
+      if (req.files && req.files.length > 0) {
+        datosActualizar.imagenes = req.files.map(file => file.path);
       }
 
       const actualizada = await Habitacion.findByIdAndUpdate(
-        req.params.id,
-        req.body,
+        req.params.id, 
+        datosActualizar,
         { returnDocument: 'after' }
       );
       res.json(actualizada);
@@ -75,6 +88,14 @@ const habitacionController = {
 
       if (habitacion.hospedaje.administrador.toString() !== req.user.id && req.user.rol !== 'super_admin') {
         return res.status(403).json({ message: 'No tienes permiso para eliminar esta habitación' });
+      }
+
+      // Eliminar imágenes de Cloudinary
+      if (habitacion.imagenes && habitacion.imagenes.length > 0) {
+        const deletionPromises = habitacion.imagenes.map(url => 
+          cloudinary.uploader.destroy(extraerPublicId(url))
+        );
+        await Promise.all(deletionPromises);
       }
 
       await Habitacion.findByIdAndDelete(req.params.id);

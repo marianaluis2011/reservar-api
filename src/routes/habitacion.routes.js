@@ -4,6 +4,7 @@ import { validateJwt } from '../middlewares/validateJwt.js';
 import { authorize } from '../middlewares/authorize.js';
 import { createRoomValidator, updateRoomValidator, roomIdParamValidator, hospedajeIdParamValidator } from '../validators/habitacionValidation.js';
 import { validateResult } from '../middlewares/validateResult.js';
+import { upload } from '../config/cloudinary.js';
 
 const router = Router();
 
@@ -12,8 +13,17 @@ router.get('/hospedaje/:hospedajeId', hospedajeIdParamValidator, validateResult,
 router.get('/:id', roomIdParamValidator, validateResult, habitacionController.obtenerDetalle);
 
 // Rutas protegidas
-router.post('/', validateJwt, authorize(['admin_hospedaje', 'super_admin']), createRoomValidator, validateResult, habitacionController.crear);
-router.put('/:id', validateJwt, authorize(['admin_hospedaje', 'super_admin']), roomIdParamValidator, updateRoomValidator, validateResult, habitacionController.actualizar);
+router.post(
+  '/', 
+  validateJwt, 
+  authorize(['admin_hospedaje', 'super_admin']), 
+  upload.array('imagenes', 5),
+  createRoomValidator, 
+  validateResult, 
+  habitacionController.crear
+);
+
+router.put('/:id', validateJwt, authorize(['admin_hospedaje', 'super_admin']), upload.array('imagenes', 5), roomIdParamValidator, updateRoomValidator, validateResult, habitacionController.actualizar);
 router.delete('/:id', validateJwt, authorize(['admin_hospedaje', 'super_admin']), roomIdParamValidator, validateResult, habitacionController.eliminar);
 
 export default router;

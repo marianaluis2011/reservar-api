@@ -1,35 +1,26 @@
 import { body, param } from 'express-validator';
+import { body, param } from 'express-validator';
 
 export const createRoomValidator = [
   body('nombre')
-    .notEmpty().withMessage('Falta el campo nombre')
-    .bail()
-    .isLength({ min: 3 }).withMessage('El nombre de la habitación debe tener al menos 3 caracteres'),
+    .notEmpty().withMessage('El nombre de la habitación es obligatorio')
+    .isLength({ min: 3 }).withMessage('El nombre debe tener al menos 3 caracteres'),
   body('descripcion')
-    .notEmpty().withMessage('Falta el campo descripción')
-    .bail()
-    .isLength({ min: 10 }).withMessage('La descripción es demasiado corta'),
+    .notEmpty().withMessage('La descripción es obligatoria')
+    .isLength({ min: 10 }).withMessage('La descripción debe tener al menos 10 caracteres'),
   body('capacidadMaxima')
-    .notEmpty().withMessage('Falta la capacidad máxima')
-    .bail()
-    .isInt({ min: 1 }).withMessage('La capacidad mínima debe ser 1 persona'),
+    .isInt({ min: 1 }).withMessage('La capacidad debe ser al menos 1'),
   body('precioPorNoche')
-    .notEmpty().withMessage('Falta el precio por noche')
-    .bail()
-    .isFloat({ min: 0 }).withMessage('El precio debe ser un número positivo')
+    .isFloat({ min: 0 }).withMessage('El precio no puede ser negativo'),
+  body('hospedaje')
+    .isMongoId().withMessage('ID de hospedaje inválido')
 ];
 
 export const updateRoomValidator = [
-  body('nombre').optional()
-    .isLength({ min: 3 }).withMessage('El nombre de la habitación debe tener al menos 3 caracteres'),
-  body('descripcion').optional()
-    .isLength({ min: 10 }).withMessage('La descripción es demasiado corta'),
-  body('capacidadMaxima').optional()
-    .isInt({ min: 1 }).withMessage('La capacidad mínima debe ser 1 persona'),
-  body('precioPorNoche').optional()
-    .isFloat({ min: 0 }).withMessage('El precio debe ser un número positivo'),
-  body('estado').optional()
-    .isIn(['activa', 'inactiva', 'mantenimiento']).withMessage('Estado de habitación inválido')
+  body('nombre').optional().isLength({ min: 3 }),
+  body('capacidadMaxima').optional().isInt({ min: 1 }),
+  body('precioPorNoche').optional().isFloat({ min: 0 }),
+  body('estado').optional().isIn(['activa', 'inactiva']).withMessage('Estado inválido')
 ];
 
 export const roomIdParamValidator = [
