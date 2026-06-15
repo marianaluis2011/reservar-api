@@ -1,26 +1,23 @@
-import Hospedaje from '../models/hospedaje.js';
+import Accommodation from '../models/hospedaje.js';
 import { cloudinary, extraerPublicId } from '../config/cloudinary.js';
 
-const hospedajeController = {
+const accommodationController = {
 
   registrar: async (req, res) => {
     try {
-      // Capturar URLs de Cloudinary desde req.files
-      const imagenPrincipal = req.files?.imagenPrincipal ? req.files.imagenPrincipal[0].path : req.body.imagenPrincipal;
-      const galeria = req.files?.galeria ? req.files.galeria.map(file => file.path) : [];
+      const mainImage = req.files?.mainImage ? req.files.mainImage[0].path : req.body.mainImage;
+      const gallery = req.files?.gallery ? req.files.gallery.map(file => file.path) : [];
 
-      // Si viene un administrador en el body, lo usamos (útil para super_admin), 
-      // si no, se asigna al usuario que crea la petición.
-      const adminId = req.body.administrador || req.user.id;
+      const adminId = req.body.admin || req.user.id;
 
-      const nuevoHospedaje = new Hospedaje({
+      const newAccommodation = new Accommodation({
         ...req.body,
-        imagenPrincipal,
-        galeria,
-        administrador: adminId
+        mainImage,
+        gallery,
+        admin: adminId
       });
-      await nuevoHospedaje.save();
-      res.status(201).json({ message: 'Hospedaje creado con éxito y asignado al administrador', hospedaje: nuevoHospedaje });
+      await newAccommodation.save();
+      res.status(201).json({ message: 'Hospedaje creado con éxito y asignado al administrador', accommodation: newAccommodation });
     } catch (error) {
       res.status(400).json({ message: 'Error al crear el hospedaje', error: error.message });
     }
@@ -28,8 +25,8 @@ const hospedajeController = {
 
   listarPublico: async (req, res) => {
     try {
-      const hospedajes = await Hospedaje.find({ estado: 'aprobado' }).populate('provincia', 'nombre');
-      res.status(200).json(hospedajes);
+      const accommodations = await Accommodation.find({ status: 'aprobado' }).populate('province', 'name');
+      res.status(200).json(accommodations);
     } catch (error) {
       res.status(500).json({ message: 'Error al obtener los hospedajes' });
     }
@@ -37,9 +34,9 @@ const hospedajeController = {
 
   obtenerDetalle: async (req, res) => {
     try {
-      const hospedaje = await Hospedaje.findById(req.params.id).populate('provincia', 'nombre');
-      if (!hospedaje) return res.status(404).json({ message: 'Hospedaje no encontrado' });
-      res.status(200).json(hospedaje);
+      const accommodation = await Accommodation.findById(req.params.id).populate('province', 'name');
+      if (!accommodation) return res.status(404).json({ message: 'Hospedaje no encontrado' });
+      res.status(200).json(accommodation);
     } catch (error) {
       res.status(500).json({ message: 'Error en el servidor' });
     }
@@ -47,15 +44,15 @@ const hospedajeController = {
 
   actualizar: async (req, res) => {
     try {
-      const actualizado = await Hospedaje.findOneAndUpdate(
+      const updated = await Accommodation.findOneAndUpdate(
         { _id: req.params.id },
         req.body,
         { returnDocument: 'after' }
       );
-      if (!actualizado) {
+      if (!updated) {
         return res.status(404).json({ message: 'Hospedaje no encontrado o no tienes permiso para editarlo' });
       }
-      res.status(200).json(actualizado);
+      res.status(200).json(updated);
     } catch (error) {
       res.status(400).json({ message: 'Error al actualizar el hospedaje', error: error.message });
     }
@@ -64,32 +61,29 @@ const hospedajeController = {
   eliminar: async (req, res) => {
     try {
       const filtro = { _id: req.params.id };
-      // Si no es super_admin, solo puede eliminar sus propios hospedajes
-      if (req.user.rol !== 'super_admin') {
-        filtro.administrador = req.user.id;
+      if (req.user.role !== 'super_admin') {
+        filtro.admin = req.user.id;
       }
 
-      const hospedaje = await Hospedaje.findOne(filtro);
-      if (!hospedaje) return res.status(404).json({ mensaje: 'Hospedaje no encontrado o no tienes permiso' });
+      const accommodation = await Accommodation.findOne(filtro);
+      if (!accommodation) return res.status(404).json({ message: 'Hospedaje no encontrado o no tienes permiso' });
 
-      // Eliminar imagen principal de Cloudinary
-      await cloudinary.uploader.destroy(extraerPublicId(hospedaje.imagenPrincipal));
+      await cloudinary.uploader.destroy(extraerPublicId(accommodation.mainImage));
 
-      // Eliminar galería de Cloudinary
-      if (hospedaje.galeria && hospedaje.galeria.length > 0) {
-        const deletionPromises = hospedaje.galeria.map(url => 
+      if (accommodation.gallery && accommodation.gallery.length > 0) {
+        const deletionPromises = accommodation.gallery.map(url =>
           cloudinary.uploader.destroy(extraerPublicId(url))
         );
         await Promise.all(deletionPromises);
       }
 
-      await Hospedaje.deleteOne({ _id: hospedaje._id });
+      await Accommodation.deleteOne({ _id: accommodation._id });
 
-      res.json({ mensaje: 'Hospedaje eliminado correctamente' });
+      res.status(200).json({ message: 'Hospedaje eliminado correctamente' });
     } catch (error) {
       res.status(500).json({ message: 'Error al eliminar el hospedaje' });
     }
   }
 };
 
-export default hospedajeController;
+export default accommodationController;

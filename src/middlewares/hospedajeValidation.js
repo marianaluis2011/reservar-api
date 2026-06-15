@@ -1,58 +1,58 @@
 import { body, param } from 'express-validator';
 
 export const createAccommodationValidator = [
-  body('nombre')
+  body('name')
     .notEmpty().withMessage('El nombre es obligatorio')
     .bail()
     .isLength({ min: 3, max: 100 }).withMessage('El nombre debe tener entre 3 y 100 caracteres'),
-  body('descripcion')
+  body('description')
     .notEmpty().withMessage('La descripción es obligatoria')
     .bail()
     .isLength({ min: 10, max: 1000 }).withMessage('La descripción debe tener entre 10 y 1000 caracteres'),
-  body('provincia')
+  body('province')
     .notEmpty().withMessage('Falta el ID de provincia')
     .bail()
     .isMongoId().withMessage('ID de provincia inválido'),
-  body('imagenPrincipal')
+  body('mainImage')
     .optional()
     .isURL().withMessage('La imagen principal debe ser una URL válida'),
-  body('contactoEmail')
+  body('contactEmail')
     .notEmpty().withMessage('Falta el email de contacto')
     .bail()
     .isEmail().withMessage('El formato del email es inválido'),
-  body('telefonoWhatsapp')
+  body('whatsapp')
     .notEmpty().withMessage('Falta el número de WhatsApp')
     .bail()
     .isLength({ min: 10, max: 20 }).withMessage('El número de WhatsApp debe tener entre 10 y 20 dígitos'),
-  body('porcentajeSena')
+  body('depositPercentage')
     .optional()
     .isFloat({ min: 0, max: 100 }).withMessage('El porcentaje de seña debe estar entre 0 y 100'),
-  body('servicios')
+  body('services')
     .optional()
     .isArray().withMessage('Los servicios deben ser un arreglo'),
-  body('administrador')
+  body('admin')
     .optional()
     .isMongoId().withMessage('ID de administrador inválido')
 ];
 
 export const updateAccommodationValidator = [
-  body('nombre').optional()
+  body('name').optional()
     .isLength({ min: 3, max: 100 }).withMessage('El nombre debe tener entre 3 y 100 caracteres'),
-  body('descripcion').optional()
+  body('description').optional()
     .isLength({ min: 10, max: 1000 }).withMessage('La descripción debe tener entre 10 y 1000 caracteres'),
-  body('provincia').optional()
+  body('province').optional()
     .isMongoId().withMessage('ID de provincia inválido'),
-  body('imagenPrincipal').optional()
+  body('mainImage').optional()
     .isURL().withMessage('La imagen principal debe ser una URL válida'),
-  body('contactoEmail').optional()
+  body('contactEmail').optional()
     .isEmail().withMessage('El formato del email es inválido'),
-  body('telefonoWhatsapp').optional()
+  body('whatsapp').optional()
     .isLength({ min: 10, max: 20 }).withMessage('El número de WhatsApp debe tener entre 10 y 20 dígitos'),
-  body('porcentajeSena').optional()
+  body('depositPercentage').optional()
     .isFloat({ min: 0, max: 100 }).withMessage('El porcentaje de seña debe estar entre 0 y 100'),
-  body('servicios').optional()
+  body('services').optional()
     .isArray().withMessage('Los servicios deben ser un arreglo'),
-  body('administrador').optional()
+  body('admin').optional()
     .isMongoId().withMessage('ID de administrador inválido')
 ];
 

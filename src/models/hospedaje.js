@@ -1,57 +1,57 @@
 import mongoose from 'mongoose';
 
-const hospedajeSchema = new mongoose.Schema({
-  nombre: {
+const accommodationSchema = new mongoose.Schema({
+  name: {
     type: String,
     required: [true, 'El nombre del hospedaje es obligatorio'],
-    trim: true
+    trim: true,
+    maxlength: [100, 'El nombre no puede superar los 100 caracteres']
   },
-  descripcion: {
+  description: {
     type: String,
-    required: [true, 'La descripción es obligatoria']
+    required: [true, 'La descripción es obligatoria'],
+    maxlength: [1000, 'La descripción no puede superar los 1000 caracteres']
   },
-  provincia: { type: mongoose.Schema.Types.ObjectId, ref: 'Provincia', required: true },
-  imagenPrincipal: {
-    type: String, // URL de Cloudinary
+  province: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Province',
+    required: true
+  },
+  mainImage: {
+    type: String,
     required: [true, 'La imagen principal es obligatoria']
   },
-  galeria: [String], // Array de URLs de Cloudinary
-  servicios: [String], // Ejemplo: ['WiFi', 'Piscina', 'Desayuno']
-
-  // Datos de Contacto y Configuración
-  contactoEmail: {
+  gallery: [String],
+  services: [String],
+  contactEmail: {
     type: String,
     required: true,
     lowercase: true
   },
-  telefonoWhatsapp: {
+  whatsapp: {
     type: String,
     required: [true, 'El número de WhatsApp es necesario para las reservas']
   },
-  porcentajeSena: {
+  depositPercentage: {
     type: Number,
     default: 0,
     min: 0,
     max: 100
   },
-
-  // Control de Estado y Roles
-  estado: {
+  status: {
     type: String,
     enum: ['pendiente', 'aprobado', 'rechazado', 'suspendido'],
     default: 'aprobado'
   },
-
-  // Referencia al Administrador del Hospedaje (Dueño)
-  administrador: {
+  admin: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Usuario', // Asumiendo que tu modelo de usuarios se llama 'Usuario'
+    ref: 'User',
     required: true
   }
 }, {
   timestamps: true
 });
 
-const Hospedaje = mongoose.model('Hospedaje', hospedajeSchema);
+const Accommodation = mongoose.model('Accommodation', accommodationSchema);
 
-export default Hospedaje;
+export default Accommodation;
