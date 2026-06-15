@@ -1,4 +1,4 @@
-import Accommodation from '../models/accommodation.js';
+import accommodationService from '../services/accommodationService.js';
 import { cloudinary, extraerPublicId } from '../config/cloudinary.js';
 
 const accommodationController = {
@@ -7,16 +7,15 @@ const accommodationController = {
     try {
       const mainImage = req.files?.mainImage ? req.files.mainImage[0].path : req.body.mainImage;
       const gallery = req.files?.gallery ? req.files.gallery.map(file => file.path) : [];
-
       const adminId = req.body.admin || req.user.id;
 
-      const newAccommodation = new Accommodation({
+      const newAccommodation = await accommodationService.crear({
         ...req.body,
         mainImage,
         gallery,
         admin: adminId
       });
-      await newAccommodation.save();
+
       res.status(201).json({ message: 'Hospedaje creado con éxito y asignado al administrador', accommodation: newAccommodation });
     } catch (error) {
       res.status(400).json({ message: 'Error al crear el hospedaje', error: error.message });
@@ -25,7 +24,7 @@ const accommodationController = {
 
   listarPublico: async (req, res) => {
     try {
-      const accommodations = await Accommodation.find({ status: 'aprobado' }).populate('province', 'name');
+      const accommodations = await accommodationService.listarPublico();
       res.status(200).json(accommodations);
     } catch (error) {
       res.status(500).json({ message: 'Error al obtener los hospedajes' });
@@ -34,7 +33,7 @@ const accommodationController = {
 
   obtenerDetalle: async (req, res) => {
     try {
-      const accommodation = await Accommodation.findById(req.params.id).populate('province', 'name');
+      const accommodation = await accommodationService.obtenerPorId(req.params.id);
       if (!accommodation) return res.status(404).json({ message: 'Hospedaje no encontrado' });
       res.status(200).json(accommodation);
     } catch (error) {
@@ -44,11 +43,7 @@ const accommodationController = {
 
   actualizar: async (req, res) => {
     try {
-      const updated = await Accommodation.findOneAndUpdate(
-        { _id: req.params.id },
-        req.body,
-        { returnDocument: 'after' }
-      );
+      const updated = await accommodationService.actualizar(req.params.id, req.body);
       if (!updated) {
         return res.status(404).json({ message: 'Hospedaje no encontrado o no tienes permiso para editarlo' });
       }
@@ -65,7 +60,7 @@ const accommodationController = {
         filtro.admin = req.user.id;
       }
 
-      const accommodation = await Accommodation.findOne(filtro);
+      const accommodation = await accommodationService.buscarUno(filtro);
       if (!accommodation) return res.status(404).json({ message: 'Hospedaje no encontrado o no tienes permiso' });
 
       await cloudinary.uploader.destroy(extraerPublicId(accommodation.mainImage));
@@ -77,7 +72,7 @@ const accommodationController = {
         await Promise.all(deletionPromises);
       }
 
-      await Accommodation.deleteOne({ _id: accommodation._id });
+      await accommodationService.eliminar(accommodation._id);
 
       res.status(200).json({ message: 'Hospedaje eliminado correctamente' });
     } catch (error) {
