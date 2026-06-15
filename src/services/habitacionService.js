@@ -1,4 +1,4 @@
-import Habitacion from '../models/habitacion.js';
+import Habitacion from '../models/room.js';
 
 const habitacionService = {
   crear: async (datos) => {

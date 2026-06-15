@@ -1,5 +1,5 @@
 import Reserva from '../models/reserva.js';
-import Habitacion from '../models/habitacion.js';
+import Habitacion from '../models/room.js';
 
 const reservaService = {
   verificarSolapamiento: async (habitacionId, fechaEntrada, fechaSalida) => {

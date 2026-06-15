@@ -1,5 +1,5 @@
 import Booking from '../models/reserva.js';
-import Room from '../models/habitacion.js';
+import Room from '../models/room.js';
 
 const bookingController = {
   crear: async (req, res) => {

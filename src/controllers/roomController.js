@@ -1,4 +1,4 @@
-import Room from '../models/habitacion.js';
+import Room from '../models/room.js';
 import Accommodation from '../models/accommodation.js';
 
 const roomController = {
