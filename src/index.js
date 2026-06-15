@@ -8,6 +8,7 @@ import reservaRoutes from './routes/booking.routes.js';
 import provinciaRoutes from './routes/province.routes.js';
 import { validateJwt } from './middlewares/validateJwt.js'; // Importar el middleware de validación JWT
 import multer from 'multer';
+import { verifyEmailConnection, sendTestEmail } from "./services/emailService.js";
 
 const app = express();
 
@@ -57,4 +58,6 @@ app.use((err, req, res, next) => {
 
 app.listen(config.port, () => {
   console.log(`🚀 Servidor de ReservaHost corriendo en http://localhost:${config.port}`);
+  verifyEmailConnection();
+  sendTestEmail();
 });
