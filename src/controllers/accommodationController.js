@@ -1,4 +1,4 @@
-import Accommodation from '../models/hospedaje.js';
+import Accommodation from '../models/accommodation.js';
 import { cloudinary, extraerPublicId } from '../config/cloudinary.js';
 
 const accommodationController = {

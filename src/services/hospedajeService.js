@@ -1,4 +1,4 @@
-import Hospedaje from '../models/hospedaje.js';
+import Hospedaje from '../models/accommodation.js';
 
 const hospedajeService = {
   registrar: async (datos) => {

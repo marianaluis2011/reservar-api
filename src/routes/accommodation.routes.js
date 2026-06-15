@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import accommodationController from '../controllers/hospedajeController.js';
+import accommodationController from '../controllers/accommodationController.js';
 import { validateJwt } from '../middlewares/validateJwt.js';
 import { authorize } from '../middlewares/authorize.js';
-import { createAccommodationValidator, updateAccommodationValidator, accommodationIdParamValidator } from '../middlewares/hospedajeValidation.js';
+import { createAccommodationValidator, updateAccommodationValidator, accommodationIdParamValidator } from '../middlewares/accommodationValidation.js';
 import { validateResult } from '../middlewares/validateResult.js';
 import { upload } from '../config/cloudinary.js';
 

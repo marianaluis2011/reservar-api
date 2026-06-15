@@ -2,7 +2,7 @@ import express from 'express';
 import config from './config/config.js';
 import conectarDB from './config/db.js';
 import authRoutes from './routes/auth.routes.js';
-import hospedajeRoutes from './routes/hospedaje.routes.js';
+import hospedajeRoutes from './routes/accommodation.routes.js';
 import habitacionRoutes from './routes/habitacion.routes.js';
 import reservaRoutes from './routes/reserva.routes.js';
 import provinciaRoutes from './routes/provincia.routes.js';

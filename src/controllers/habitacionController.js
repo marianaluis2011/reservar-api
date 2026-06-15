@@ -1,5 +1,5 @@
 import Room from '../models/habitacion.js';
-import Accommodation from '../models/hospedaje.js';
+import Accommodation from '../models/accommodation.js';
 
 const roomController = {
 
