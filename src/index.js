@@ -2,10 +2,10 @@ import express from 'express';
 import config from './config/config.js';
 import conectarDB from './config/db.js';
 import authRoutes from './routes/auth.routes.js';
-import hospedajeRoutes from './routes/hospedaje.routes.js';
-import habitacionRoutes from './routes/habitacion.routes.js';
-import reservaRoutes from './routes/reserva.routes.js';
-import provinciaRoutes from './routes/provincia.routes.js';
+import hospedajeRoutes from './routes/accommodation.routes.js';
+import habitacionRoutes from './routes/room.routes.js';
+import reservaRoutes from './routes/booking.routes.js';
+import provinciaRoutes from './routes/province.routes.js';
 import { validateJwt } from './middlewares/validateJwt.js'; // Importar el middleware de validación JWT
 import multer from 'multer';
 
@@ -20,12 +20,11 @@ app.use(express.urlencoded({ extended: true }));
 
 // Logger para ver todas las peticiones que llegan
 app.use((req, res, next) => {
-  console.log(`📥 Petición recibida: ${req.method} ${req.url}`);
+  console.log(`Petición recibida: ${req.method} ${req.url}`);
   next();
 });
 
 // Definición de Rutas
-
 // Rutas de Autenticación
 app.use('/api/auth', authRoutes);
 
@@ -61,8 +60,8 @@ app.use((err, req, res, next) => {
           : err.message
     });
   }
-  console.error('🔥 Error:', err.stack);
-  res.status(500).json({ mensaje: 'Error interno del servidor', error: err.message });
+  console.error(' Error:', err.stack);
+  res.status(500).json({ message: 'Error interno del servidor', error: err.message });
 });
 
 app.listen(config.port, () => {

@@ -1,46 +1,45 @@
 import mongoose from 'mongoose';
 
-const reservaSchema = new mongoose.Schema({
-  usuario: {
+const bookingSchema = new mongoose.Schema({
+  user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Usuario',
+    ref: 'User',
     required: true
   },
-  hospedaje: {
+  accommodation: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Hospedaje',
+    ref: 'Accommodation',
     required: true
   },
-  habitacion: {
+  room: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Habitacion',
+    ref: 'Room',
     required: true
   },
-  fechaEntrada: {
+  checkIn: {
     type: Date,
     required: true
   },
-  fechaSalida: {
+  checkOut: {
     type: Date,
     required: true
   },
-  precioTotal: {
+  totalPrice: {
     type: Number,
     required: true
   },
-  estado: {
+  status: {
     type: String,
     enum: ['pendiente', 'confirmada', 'cancelada', 'completada'],
     default: 'pendiente'
   },
-  pagoRealizado: {
+  paid: {
     type: Boolean,
     default: false
   }
 }, { timestamps: true });
 
-// Índice para búsquedas rápidas de disponibilidad
-reservaSchema.index({ habitacion: 1, fechaEntrada: 1, fechaSalida: 1 });
+bookingSchema.index({ room: 1, checkIn: 1, checkOut: 1 });
 
-const Reserva = mongoose.model('Reserva', reservaSchema);
-export default Reserva;
+const Booking = mongoose.model('Booking', bookingSchema);
+export default Booking;
