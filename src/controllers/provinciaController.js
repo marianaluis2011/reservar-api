@@ -1,10 +1,10 @@
-import Provincia from '../models/provincia.js';
+import Province from '../models/provincia.js';
 
-const provinciaController = {
+const provinceController = {
   listar: async (req, res) => {
     try {
-      const provincias = await Provincia.find().sort({ nombre: 1 });
-      res.json(provincias);
+      const provinces = await Province.find().sort({ name: 1 });
+      res.status(200).json(provinces);
     } catch (error) {
       res.status(500).json({ message: 'Error al obtener provincias' });
     }
@@ -12,13 +12,13 @@ const provinciaController = {
 
   crear: async (req, res) => {
     try {
-      const nuevaProvincia = new Provincia(req.body);
-      await nuevaProvincia.save();
-      res.status(201).json(nuevaProvincia);
+      const newProvince = new Province(req.body);
+      await newProvince.save();
+      res.status(201).json(newProvince);
     } catch (error) {
       res.status(400).json({ message: 'Error al crear la provincia' });
     }
   }
 };
 
-export default provinciaController;
+export default provinceController;
