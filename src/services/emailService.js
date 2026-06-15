@@ -1,69 +1,105 @@
 import nodemailer from "nodemailer";
+import {
+    SMTP_HOST,
+    SMTP_PORT,
+    SMTP_USER,
+    SMTP_PASS,
+    SMTP_SECURE,
+} from "../config/env.js";
+import Handlebars from "handlebars";
 import fs from "fs";
 import path from "path";
-import handlebars from "handlebars";
-import { fileURLToPath } from "url";
-import config from "../config/config.js";
 
 const transporter = nodemailer.createTransport({
-  host: config.smtpHost,
-  port: Number(config.smtpPort),
-  secure: config.smtpSecure === "true",
-  auth: {
-    user: config.smtpUser,
-    pass: config.smtpPass,
-  },
+    host: SMTP_HOST,
+    port: Number(SMTP_PORT),
+    secure: SMTP_SECURE === "true",
+    auth: {
+        user: SMTP_USER,
+        pass: SMTP_PASS,
+    },
 });
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 function renderTemplate(templateName, data) {
-  const templatePath = path.join(
-    __dirname,
-    "../templates",
-    templateName
-  );
+    const filePath = path.join(
+        process.cwd(),
+        "src",
+        "templates",
+        `${templateName}.hbs`
+    );
+    const source = fs.readFileSync(filePath, "utf-8");
+    const template = Handlebars.compile(source);
+    return template(data);
+}
 
-  const templateSource = fs.readFileSync(templatePath, "utf-8");
-  const compiledTemplate = handlebars.compile(templateSource);
-
-  return compiledTemplate(data);
+function formatDate(date) {
+    return new Date(date).toLocaleDateString("es-AR");
 }
 
 async function verifyEmailConnection() {
-  try {
-    await transporter.verify();
-    console.log("SMTP connection verified successfully");
-  } catch (error) {
-    console.error("SMTP connection failed:", error.message);
-  }
+    return transporter.verify();
 }
 
 async function sendTestEmail() {
-  const info = await transporter.sendMail({
-    from: `"ReservaHost" <${config.smtpUser}>`,
-    to: config.smtpUser,
-    subject: "ReservaHost SMTP test",
-    html: "<h1>SMTP working correctly</h1><p>This is a test email.</p>",
-  });
-  console.log("Email sent:", info.messageId);
-  console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
+    const info = await transporter.sendMail({
+        from: `"ReservaHost" <${SMTP_USER}>`,
+        to: SMTP_USER,
+        subject: "ReservaHost SMTP test",
+        html: "<h1>SMTP funcionando correctamente</h1><p>Este es un email de prueba.</p>",
+    });
+    return {
+        messageId: info.messageId,
+        previewUrl: nodemailer.getTestMessageUrl(info),
+    };
 }
 
 async function sendRegisterEmail(to, name) {
-  const html = renderTemplate("register.hbs", {
-    name,
-  });
-
-  const info = await transporter.sendMail({
-    from: `"ReservaHost" <${config.smtpUser}>`,
-    to,
-    subject: "Bienvenido a ReservaHost",
-    html,
-  });
-
-  console.log("Register email sent:", info.messageId);
-  console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
+    const html = renderTemplate("register", {
+        name,
+    });
+    const info = await transporter.sendMail({
+        from: `"ReservaHost" <${SMTP_USER}>`,
+        to,
+        subject: "Bienvenido a ReservaHost",
+        text: "Tu cuenta fue creada correctamente.",
+        html,
+    });
+    return {
+        messageId: info.messageId,
+        previewUrl: nodemailer.getTestMessageUrl(info),
+    };
 }
 
-export { verifyEmailConnection, sendTestEmail, sendRegisterEmail };
+async function sendBookingConfirmationEmail(booking) {
+    const html = renderTemplate("bookingConfirmation", {
+        fullName: booking.user.fullName,
+        accommodationName: booking.accommodation.name,
+        roomName: booking.room.name,
+        checkIn: formatDate(booking.checkIn),
+        checkOut: formatDate(booking.checkOut),
+        totalPrice: booking.totalPrice,
+        status: booking.status,
+    });
+
+    const info = await transporter.sendMail({
+        from: `"ReservaHost" <${SMTP_USER}>`,
+        to: booking.user.email,
+        subject: "Reserva creada en ReservaHost",
+        text: "Tu reserva fue registrada correctamente.",
+        html,
+    });
+
+    return {
+        messageId: info.messageId,
+        previewUrl: nodemailer.getTestMessageUrl(info),
+    };
+}
+
+export {
+    transporter,
+    verifyEmailConnection,
+    sendTestEmail,
+    sendRegisterEmail,
+    sendBookingConfirmationEmail,
+    renderTemplate,
+};
