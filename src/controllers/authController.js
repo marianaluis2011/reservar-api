@@ -1,5 +1,6 @@
 import userService from '../services/userService.js';
 import { generateToken } from '../libs/jwt.js';
+import { sendRegisterEmail } from "../services/emailService.js";
 
 const authController = {
   register: async (req, res) => {
@@ -13,6 +14,7 @@ const authController = {
         return res.status(409).json({ message: 'El correo electrónico ya está registrado.' });
       }
       const newUser = await userService.createUser({ fullName, email, password, role });
+      await sendRegisterEmail(email, fullName);
       res.status(201).json({ message: 'Usuario registrado exitosamente.' });
     } catch (error) {
       res.status(500).json({ message: 'Error al registrar usuario', error: error.message });
