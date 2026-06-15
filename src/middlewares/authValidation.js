@@ -22,5 +22,14 @@ export const loginValidator = [
     .notEmpty().withMessage('El email es obligatorio')
     .bail()
     .isEmail().withMessage('El formato del email es inválido'),
-  body('password').notEmpty().withMessage('La contraseña es obligatoria')
+  body('password').notEmpty().withMessage('La contraseña es obligatoria'),
+  body().custom((value, { req }) => {
+    const allowedFields = ['email', 'password'];
+    const receivedFields = Object.keys(req.body);
+    const extraFields = receivedFields.filter(field => !allowedFields.includes(field));
+    if (extraFields.length > 0) {
+      throw new Error(`Campos no permitidos: ${extraFields.join(', ')}`);
+    }
+    return true;
+  })
 ];
