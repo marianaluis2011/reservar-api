@@ -21,6 +21,14 @@ const accommodationService = {
     return Accommodation.findOneAndUpdate({ _id: id }, data, { returnDocument: 'after' });
   },
 
+  aprobar: async (id) => {
+    return Accommodation.findByIdAndUpdate(
+      id,
+      { status: 'aprobado' },
+      { new: true }
+    ).populate('admin', 'fullName email');
+  },
+
   eliminar: async (id) => {
     return Accommodation.deleteOne({ _id: id });
   }
