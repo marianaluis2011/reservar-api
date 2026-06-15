@@ -1,26 +1,29 @@
-import Habitacion from '../models/room.js';
+import Room from '../models/room.js';
 
-const habitacionService = {
-  crear: async (datos) => {
-    const nuevaHabitacion = new Habitacion(datos);
-    return await nuevaHabitacion.save();
+const roomService = {
+  crear: async (data) => {
+    return Room.create(data);
   },
 
-  listarPorHospedaje: async (hospedajeId) => {
-    return await Habitacion.find({ hospedaje: hospedajeId });
+  listarPorAccommodation: async (accommodationId) => {
+    return Room.find({ accommodation: accommodationId });
   },
 
-  obtenerDetalle: async (id) => {
-    return await Habitacion.findById(id).populate('hospedaje', 'nombre');
+  obtenerPorId: async (id) => {
+    return Room.findById(id).populate('accommodation', 'name');
   },
 
-  actualizar: async (id, datos) => {
-    return await Habitacion.findByIdAndUpdate(id, datos, { returnDocument: 'after' });
+  obtenerConAccommodation: async (id) => {
+    return Room.findById(id).populate('accommodation');
+  },
+
+  actualizar: async (id, data) => {
+    return Room.findByIdAndUpdate(id, data, { returnDocument: 'after' });
   },
 
   eliminar: async (id) => {
-    return await Habitacion.findByIdAndDelete(id);
+    return Room.findByIdAndDelete(id);
   }
 };
 
-export default habitacionService;
+export default roomService;
