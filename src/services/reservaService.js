@@ -1,4 +1,4 @@
-import Reserva from '../models/reserva.js';
+import Reserva from '../models/booking.js';
 import Habitacion from '../models/room.js';
 
 const reservaService = {

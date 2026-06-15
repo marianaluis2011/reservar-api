@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import bookingController from '../controllers/reservaController.js';
+import bookingController from '../controllers/bookingController.js';
 import { validateJwt } from '../middlewares/validateJwt.js';
-import { createBookingValidator, bookingIdParamValidator } from '../middlewares/reservaValidation.js';
+import { createBookingValidator, bookingIdParamValidator } from '../middlewares/bookingValidation.js';
 import { validateResult } from '../middlewares/validateResult.js';
 
 const router = Router();

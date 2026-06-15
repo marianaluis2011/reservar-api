@@ -1,4 +1,4 @@
-import Booking from '../models/reserva.js';
+import Booking from '../models/booking.js';
 import Room from '../models/room.js';
 
 const bookingController = {
