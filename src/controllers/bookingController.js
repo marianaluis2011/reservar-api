@@ -1,7 +1,7 @@
 import bookingService from '../services/bookingService.js';
 import roomService from '../services/roomService.js';
 import {
-  sendBookingConfirmationEmail,
+  sendBookingCreatedEmail,
   sendBookingCancelledEmail,
 } from "../services/emailService.js";
 
@@ -36,7 +36,7 @@ const bookingController = {
       const bookingWithDetails = await bookingService.obtenerPorId(newBooking._id);
       let emailSent = false;
       try {
-        await sendBookingConfirmationEmail(bookingWithDetails);
+        await sendBookingCreatedEmail(bookingWithDetails);
         emailSent = true;
       } catch (error) {
         emailSent = false;

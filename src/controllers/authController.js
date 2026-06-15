@@ -14,7 +14,11 @@ const authController = {
         return res.status(409).json({ message: 'El correo electrónico ya está registrado.' });
       }
       const newUser = await userService.createUser({ fullName, email, password, role });
-      await sendRegisterEmail(email, fullName);
+      try {
+        await sendRegisterEmail(email, fullName);
+      } catch (error) {
+        console.error('Error al enviar el email de registro:', error.message);
+      }
       res.status(201).json({ message: 'Usuario registrado exitosamente.' });
     } catch (error) {
       res.status(500).json({ message: 'Error al registrar usuario', error: error.message });
