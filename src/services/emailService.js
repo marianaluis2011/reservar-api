@@ -40,19 +40,6 @@ async function verifyEmailConnection() {
     return transporter.verify();
 }
 
-async function sendTestEmail() {
-    const info = await transporter.sendMail({
-        from: `"ReservaHost" <${SMTP_USER}>`,
-        to: SMTP_USER,
-        subject: "ReservaHost SMTP test",
-        html: "<h1>SMTP funcionando correctamente</h1><p>Este es un email de prueba.</p>",
-    });
-    return {
-        messageId: info.messageId,
-        previewUrl: nodemailer.getTestMessageUrl(info),
-    };
-}
-
 async function sendRegisterEmail(to, name) {
     const html = renderTemplate("register", {
         name,
@@ -80,7 +67,6 @@ async function sendBookingConfirmationEmail(booking) {
         totalPrice: booking.totalPrice,
         status: booking.status,
     });
-
     const info = await transporter.sendMail({
         from: `"ReservaHost" <${SMTP_USER}>`,
         to: booking.user.email,
@@ -88,7 +74,29 @@ async function sendBookingConfirmationEmail(booking) {
         text: "Tu reserva fue registrada correctamente.",
         html,
     });
+    return {
+        messageId: info.messageId,
+        previewUrl: nodemailer.getTestMessageUrl(info),
+    };
+}
 
+async function sendBookingCancelledEmail(booking) {
+    const html = renderTemplate("bookingCancelled", {
+        fullName: booking.user.fullName,
+        accommodationName: booking.accommodation.name,
+        roomName: booking.room.name,
+        checkIn: formatDate(booking.checkIn),
+        checkOut: formatDate(booking.checkOut),
+        totalPrice: booking.totalPrice,
+        status: booking.status,
+    });
+    const info = await transporter.sendMail({
+        from: `"ReservaHost" <${SMTP_USER}>`,
+        to: booking.user.email,
+        subject: "Reserva cancelada en ReservaHost",
+        text: "Tu reserva fue cancelada correctamente.",
+        html,
+    });
     return {
         messageId: info.messageId,
         previewUrl: nodemailer.getTestMessageUrl(info),
@@ -98,8 +106,8 @@ async function sendBookingConfirmationEmail(booking) {
 export {
     transporter,
     verifyEmailConnection,
-    sendTestEmail,
     sendRegisterEmail,
     sendBookingConfirmationEmail,
+    sendBookingCancelledEmail,
     renderTemplate,
 };
