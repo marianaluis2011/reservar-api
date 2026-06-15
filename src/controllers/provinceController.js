@@ -1,4 +1,4 @@
-import Province from '../models/provincia.js';
+import Province from '../models/province.js';
 
 const provinceController = {
   listar: async (req, res) => {

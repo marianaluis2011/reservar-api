@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import provinceController from '../controllers/provinciaController.js';
+import provinceController from '../controllers/provinceController.js';
 import { validateJwt } from '../middlewares/validateJwt.js';
 import { authorize } from '../middlewares/authorize.js';
-import { createProvinciaValidator } from '../middlewares/provinciaValidation.js';
+import { createProvinciaValidator } from '../middlewares/provinceValidation.js';
 import { validateResult } from '../middlewares/validateResult.js';
 
 const router = Router();

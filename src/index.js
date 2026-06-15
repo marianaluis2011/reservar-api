@@ -5,7 +5,7 @@ import authRoutes from './routes/auth.routes.js';
 import hospedajeRoutes from './routes/accommodation.routes.js';
 import habitacionRoutes from './routes/room.routes.js';
 import reservaRoutes from './routes/booking.routes.js';
-import provinciaRoutes from './routes/provincia.routes.js';
+import provinciaRoutes from './routes/province.routes.js';
 import { validateJwt } from './middlewares/validateJwt.js'; // Importar el middleware de validación JWT
 import multer from 'multer';
 
