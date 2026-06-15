@@ -1,45 +1,35 @@
-import Reserva from '../models/booking.js';
-import Habitacion from '../models/room.js';
+import Booking from '../models/booking.js';
 
-const reservaService = {
-  verificarSolapamiento: async (habitacionId, fechaEntrada, fechaSalida) => {
-    return await Reserva.findOne({
-      habitacion: habitacionId,
-      estado: { $ne: 'cancelada' },
+const bookingService = {
+  crear: async (data) => {
+    return Booking.create(data);
+  },
+
+  buscarSolapada: async (roomId, checkIn, checkOut) => {
+    return Booking.findOne({
+      room: roomId,
+      status: { $ne: 'cancelada' },
       $or: [
-        { fechaEntrada: { $lt: fechaSalida }, fechaSalida: { $gt: fechaEntrada } }
+        { checkIn: { $lt: checkOut }, checkOut: { $gt: checkIn } }
       ]
     });
   },
 
-  crear: async (datos) => {
-    const { habitacion, fechaEntrada, fechaSalida } = datos;
-    
-    // 1. Verificar solapamiento
-    const solapada = await reservaService.verificarSolapamiento(habitacion, fechaEntrada, fechaSalida);
-    if (solapada) throw new Error('La habitación ya está reservada en esas fechas');
-
-    // 2. Validar habitación
-    const habitacionDoc = await Habitacion.findById(habitacion);
-    if (!habitacionDoc) throw new Error('Habitación no encontrada');
-    if (habitacionDoc.estado !== 'activa') throw new Error('Esta habitación no está disponible');
-
-    // 3. Calcular precio
-    const diferenciaDias = Math.ceil((new Date(fechaSalida) - new Date(fechaEntrada)) / (1000 * 60 * 60 * 24));
-    const precioTotal = diferenciaDias * habitacionDoc.precioPorNoche;
-
-    const nuevaReserva = new Reserva({
-      ...datos,
-      usuario: datos.usuario || "64f1a2b3c4d5e6f7a8b9c0d1", // Temporal
-      precioTotal
-    });
-
-    return await nuevaReserva.save();
+  obtenerDelUsuario: async (id, userId) => {
+    return Booking.findOne({ _id: id, user: userId }).populate('accommodation room');
   },
 
-  listarPorUsuario: async (usuarioId) => {
-    return await Reserva.find({ usuario: usuarioId }).populate('hospedaje habitacion');
+  listarPorUsuario: async (userId) => {
+    return Booking.find({ user: userId }).populate('accommodation room');
+  },
+
+  cancelar: async (id, userId) => {
+    return Booking.findOneAndUpdate(
+      { _id: id, user: userId },
+      { status: 'cancelada' },
+      { new: true }
+    );
   }
 };
 
-export default reservaService;
+export default bookingService;
