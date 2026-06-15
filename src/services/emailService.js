@@ -1,4 +1,8 @@
 import nodemailer from "nodemailer";
+import fs from "fs";
+import path from "path";
+import handlebars from "handlebars";
+import { fileURLToPath } from "url";
 import config from "../config/config.js";
 
 const transporter = nodemailer.createTransport({
@@ -10,6 +14,21 @@ const transporter = nodemailer.createTransport({
     pass: config.smtpPass,
   },
 });
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+function renderTemplate(templateName, data) {
+  const templatePath = path.join(
+    __dirname,
+    "../templates",
+    templateName
+  );
+
+  const templateSource = fs.readFileSync(templatePath, "utf-8");
+  const compiledTemplate = handlebars.compile(templateSource);
+
+  return compiledTemplate(data);
+}
 
 async function verifyEmailConnection() {
   try {
@@ -31,4 +50,20 @@ async function sendTestEmail() {
   console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
 }
 
-export { verifyEmailConnection, sendTestEmail };
+async function sendRegisterEmail(to, name) {
+  const html = renderTemplate("register.hbs", {
+    name,
+  });
+
+  const info = await transporter.sendMail({
+    from: `"ReservaHost" <${config.smtpUser}>`,
+    to,
+    subject: "Bienvenido a ReservaHost",
+    html,
+  });
+
+  console.log("Register email sent:", info.messageId);
+  console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
+}
+
+export { verifyEmailConnection, sendTestEmail, sendRegisterEmail };
