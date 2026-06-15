@@ -1,35 +1,31 @@
-import Habitacion from '../models/habitacion.js';
-import Hospedaje from '../models/hospedaje.js';
-import { cloudinary, extraerPublicId } from '../config/cloudinary.js';
+import Room from '../models/habitacion.js';
+import Accommodation from '../models/hospedaje.js';
 
-const habitacionController = {
+const roomController = {
 
   crear: async (req, res) => {
     try {
-      // Seguridad: verificar que el hospedaje pertenezca al admin logueado (o ser super_admin)
-      const filtro = { _id: req.body.hospedaje };
+      const filtro = { _id: req.body.accommodation };
 
-      if (req.user.rol !== 'super_admin') {
-        filtro.administrador = req.user.id;
+      if (req.user.role !== 'super_admin') {
+        filtro.admin = req.user.id;
       }
 
-      const hospedajePropio = await Hospedaje.findOne(filtro);
+      const ownAccommodation = await Accommodation.findOne(filtro);
 
-      if (!hospedajePropio) {
+      if (!ownAccommodation) {
         return res.status(403).json({ message: 'No tienes permiso para agregar habitaciones a este hospedaje' });
       }
 
-      const imagenes = req.files ? req.files.map(file => file.path) : [];
+      const images = req.files ? req.files.map(file => file.path) : [];
 
-      const imagenes = req.files ? req.files.map(file => file.path) : [];
-
-      const nuevaHabitacion = new Habitacion({
+      const newRoom = new Room({
         ...req.body,
-        imagenes
+        images
       });
-      await nuevaHabitacion.save();
+      await newRoom.save();
 
-      res.status(201).json({ message: 'Habitación creada con éxito', habitacion: nuevaHabitacion });
+      res.status(201).json({ message: 'Habitación creada con éxito', room: newRoom });
     } catch (error) {
       res.status(400).json({ message: 'Error al crear la habitación', error: error.message });
     }
@@ -37,9 +33,9 @@ const habitacionController = {
 
   listarPorHospedaje: async (req, res) => {
     try {
-      const { hospedajeId } = req.params;
-      const habitaciones = await Habitacion.find({ hospedaje: hospedajeId });
-      res.json(habitaciones);
+      const { accommodationId } = req.params;
+      const rooms = await Room.find({ accommodation: accommodationId });
+      res.status(200).json(rooms);
     } catch (error) {
       res.status(500).json({ message: 'Error al obtener las habitaciones' });
     }
@@ -47,9 +43,9 @@ const habitacionController = {
 
   obtenerDetalle: async (req, res) => {
     try {
-      const habitacion = await Habitacion.findById(req.params.id).populate('hospedaje', 'nombre');
-      if (!habitacion) return res.status(404).json({ message: 'Habitación no encontrada' });
-      res.json(habitacion);
+      const room = await Room.findById(req.params.id).populate('accommodation', 'name');
+      if (!room) return res.status(404).json({ message: 'Habitación no encontrada' });
+      res.status(200).json(room);
     } catch (error) {
       res.status(500).json({ message: 'Error en el servidor' });
     }
@@ -57,25 +53,24 @@ const habitacionController = {
 
   actualizar: async (req, res) => {
     try {
-      // Buscar la habitación y verificar propiedad a través del hospedaje
-      const habitacion = await Habitacion.findById(req.params.id).populate('hospedaje');
-      if (!habitacion) return res.status(404).json({ message: 'Habitación no encontrada' });
+      const room = await Room.findById(req.params.id).populate('accommodation');
+      if (!room) return res.status(404).json({ message: 'Habitación no encontrada' });
 
-      if (habitacion.hospedaje.administrador.toString() !== req.user.id && req.user.rol !== 'super_admin') {
-        return res.status(403).json({ mensaje: 'No tienes permiso para editar esta habitación' });
+      if (room.accommodation.admin.toString() !== req.user.id && req.user.role !== 'super_admin') {
+        return res.status(403).json({ message: 'No tienes permiso para editar esta habitación' });
       }
 
-      const datosActualizar = { ...req.body };
+      const dataToUpdate = { ...req.body };
       if (req.files && req.files.length > 0) {
-        datosActualizar.imagenes = req.files.map(file => file.path);
+        dataToUpdate.images = req.files.map(file => file.path);
       }
 
-      const actualizada = await Habitacion.findByIdAndUpdate(
-        req.params.id, 
-        datosActualizar,
+      const updated = await Room.findByIdAndUpdate(
+        req.params.id,
+        dataToUpdate,
         { returnDocument: 'after' }
       );
-      res.json(actualizada);
+      res.status(200).json(updated);
     } catch (error) {
       res.status(400).json({ message: 'Error al actualizar la habitación', error: error.message });
     }
@@ -83,27 +78,19 @@ const habitacionController = {
 
   eliminar: async (req, res) => {
     try {
-      const habitacion = await Habitacion.findById(req.params.id).populate('hospedaje');
-      if (!habitacion) return res.status(404).json({ message: 'Habitación no encontrada' });
+      const room = await Room.findById(req.params.id).populate('accommodation');
+      if (!room) return res.status(404).json({ message: 'Habitación no encontrada' });
 
-      if (habitacion.hospedaje.administrador.toString() !== req.user.id && req.user.rol !== 'super_admin') {
+      if (room.accommodation.admin.toString() !== req.user.id && req.user.role !== 'super_admin') {
         return res.status(403).json({ message: 'No tienes permiso para eliminar esta habitación' });
       }
 
-      // Eliminar imágenes de Cloudinary
-      if (habitacion.imagenes && habitacion.imagenes.length > 0) {
-        const deletionPromises = habitacion.imagenes.map(url => 
-          cloudinary.uploader.destroy(extraerPublicId(url))
-        );
-        await Promise.all(deletionPromises);
-      }
-
-      await Habitacion.findByIdAndDelete(req.params.id);
-      res.json({ message: 'Habitación eliminada correctamente' });
+      await Room.findByIdAndDelete(req.params.id);
+      res.status(200).json({ message: 'Habitación eliminada correctamente' });
     } catch (error) {
       res.status(400).json({ message: 'Error al eliminar la habitación', error: error.message });
     }
   }
 };
 
-export default habitacionController;
+export default roomController;
