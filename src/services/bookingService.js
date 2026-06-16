@@ -33,7 +33,14 @@ const bookingService = {
       { status: 'cancelada' },
       { new: true }
     );
-  }
+  },
+  confirmar: async (id) => {
+    return Booking.findByIdAndUpdate(
+      id,
+      { status: 'confirmada' },
+      { new: true }
+    ).populate('user accommodation room');
+  },
 };
 
 export default bookingService;

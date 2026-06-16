@@ -1,8 +1,9 @@
 import bookingService from '../services/bookingService.js';
 import roomService from '../services/roomService.js';
 import {
-  sendBookingConfirmationEmail,
+  sendBookingCreatedEmail,
   sendBookingCancelledEmail,
+  sendBookingConfirmedEmail,
 } from "../services/emailService.js";
 
 const bookingController = {
@@ -36,7 +37,7 @@ const bookingController = {
       const bookingWithDetails = await bookingService.obtenerPorId(newBooking._id);
       let emailSent = false;
       try {
-        await sendBookingConfirmationEmail(bookingWithDetails);
+        await sendBookingCreatedEmail(bookingWithDetails);
         emailSent = true;
       } catch (error) {
         emailSent = false;
@@ -57,6 +58,31 @@ const bookingController = {
       res.status(200).json(booking);
     } catch (error) {
       res.status(500).json({ message: 'Error al obtener el detalle' });
+    }
+  },
+  confirmar: async (req, res) => {
+    try {
+      const booking = await bookingService.obtenerPorId(req.params.id);
+      if (!booking) {
+        return res.status(404).json({ message: 'Reserva no encontrada' });
+      }
+      if (req.user.role !== 'super_admin' && booking.accommodation.admin.toString() !== req.user.id) {
+        return res.status(403).json({ message: 'No tienes permiso para confirmar esta reserva' });
+      }
+      if (booking.status !== 'pendiente') {
+        return res.status(400).json({ message: 'Solo se pueden confirmar reservas pendientes' });
+      }
+      const confirmed = await bookingService.confirmar(req.params.id);
+      let emailSent = false;
+      try {
+        await sendBookingConfirmedEmail(confirmed);
+        emailSent = true;
+      } catch (error) {
+        emailSent = false;
+      }
+      res.status(200).json({ message: 'Reserva confirmada correctamente', booking: confirmed, emailSent });
+    } catch (error) {
+      res.status(500).json({ message: 'Error al confirmar la reserva' });
     }
   },
   cancelar: async (req, res) => {

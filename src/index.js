@@ -50,7 +50,7 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(config.port, async () => {
-  console.log(`🚀 Servidor de ReservaHost corriendo en http://localhost:${config.port}`);
+  console.log(`🚀 Servidor de Hospedar corriendo en http://localhost:${config.port}`);
 
   try {
     await verifyEmailConnection();

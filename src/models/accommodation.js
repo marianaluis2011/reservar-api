@@ -41,7 +41,7 @@ const accommodationSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: ['pendiente', 'aprobado', 'rechazado', 'suspendido'],
-    default: 'aprobado'
+    default: 'pendiente'
   },
   admin: {
     type: mongoose.Schema.Types.ObjectId,

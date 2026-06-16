@@ -1,5 +1,6 @@
 import accommodationService from '../services/accommodationService.js';
 import { cloudinary, extraerPublicId } from '../config/cloudinary.js';
+import { sendAccommodationApprovedEmail } from '../services/emailService.js';
 
 const accommodationController = {
 
@@ -50,6 +51,25 @@ const accommodationController = {
       res.status(200).json(updated);
     } catch (error) {
       res.status(400).json({ message: 'Error al actualizar el hospedaje', error: error.message });
+    }
+  },
+
+  aprobar: async (req, res) => {
+    try {
+      const accommodation = await accommodationService.aprobar(req.params.id);
+      if (!accommodation) {
+        return res.status(404).json({ message: 'Hospedaje no encontrado' });
+      }
+      let emailSent = false;
+      try {
+        await sendAccommodationApprovedEmail(accommodation);
+        emailSent = true;
+      } catch (error) {
+        emailSent = false;
+      }
+      res.status(200).json({ message: 'Hospedaje aprobado correctamente', accommodation, emailSent });
+    } catch (error) {
+      res.status(400).json({ message: 'Error al aprobar el hospedaje', error: error.message });
     }
   },
 
