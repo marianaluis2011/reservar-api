@@ -8,12 +8,13 @@ import reservaRoutes from './routes/booking.routes.js';
 import provinciaRoutes from './routes/province.routes.js';
 import { validateJwt } from './middlewares/validateJwt.js';
 import multer from 'multer';
+import cors from 'cors';
 import { verifyEmailConnection } from "./services/emailService.js";
 
 const app = express();
 
 conectarDB();
-
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/api/auth', authRoutes);
