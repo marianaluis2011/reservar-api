@@ -5,7 +5,7 @@ const bookingService = {
     return Booking.create(data);
   },
 
-  buscarSolapada: async (roomId, checkIn, checkOut) => {
+  findOverlapping: async (room, checkIn, checkOut) => {
     return Booking.findOne({
       room: roomId,
       status: { $ne: 'cancelada' },
