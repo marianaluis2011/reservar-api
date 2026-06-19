@@ -7,7 +7,7 @@ const bookingService = {
 
   findOverlapping: async (room, checkIn, checkOut) => {
     return Booking.findOne({
-      room: roomId,
+      room: room,
       status: { $ne: 'cancelada' },
       $or: [
         { checkIn: { $lt: checkOut }, checkOut: { $gt: checkIn } }
@@ -24,7 +24,9 @@ const bookingService = {
   },
 
   obtenerPorId: async (id) => {
-    return Booking.findById(id).populate('user accommodation room');
+    return Booking.findById(id)
+      .populate('user', 'fullName email')
+      .populate('accommodation room');
   },
 
   cancelar: async (id, userId) => {
@@ -39,7 +41,8 @@ const bookingService = {
       id,
       { status: 'confirmada' },
       { new: true }
-    ).populate('user accommodation room');
+    ).populate('user', 'fullName email')
+      .populate('accommodation room');
   },
 };
 
