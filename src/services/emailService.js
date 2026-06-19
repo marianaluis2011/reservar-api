@@ -149,12 +149,12 @@ async function sendAccommodationApprovedEmail(accommodation) {
 }
 
 export {
-    transporter,
-    verifyEmailConnection,
-    sendRegisterEmail,
-    sendBookingCreatedEmail,
-    sendBookingCancelledEmail,
-    sendBookingConfirmedEmail,
-    sendAccommodationApprovedEmail,
-    renderTemplate,
+  transporter,
+  renderTemplate,
+  verifyEmailConnection,
+  sendRegisterEmail,
+  sendBookingCreatedEmail,
+  sendBookingCancelledEmail,
+  sendBookingConfirmedEmail,
+  sendAccommodationApprovedEmail,
 };
