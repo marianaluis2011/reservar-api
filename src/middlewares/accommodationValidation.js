@@ -26,7 +26,7 @@ export const createAccommodationValidator = [
     .isLength({ min: 10, max: 20 }).withMessage('El número de WhatsApp debe tener entre 10 y 20 dígitos'),
   body('depositPercentage')
     .optional()
-    .isFloat({ min: 0, max: 100 }).withMessage('El porcentaje de seña debe estar entre 0 y 100'),
+    .isInt({ min: 0, max: 100 }).withMessage('El porcentaje de seña debe ser un número entero entre 0 y 100'),
   body('services')
     .optional()
     .isArray().withMessage('Los servicios deben ser un arreglo'),

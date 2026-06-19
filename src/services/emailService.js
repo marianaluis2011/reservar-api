@@ -57,10 +57,6 @@ async function sendRegisterEmail(to, name) {
         html,
     });
     console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
-    return {
-        messageId: info.messageId,
-        previewUrl: nodemailer.getTestMessageUrl(info),
-    };
 }
 
 async function sendBookingCreatedEmail(booking) {
@@ -81,10 +77,6 @@ async function sendBookingCreatedEmail(booking) {
         html,
     });
     console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
-    return {
-        messageId: info.messageId,
-        previewUrl: nodemailer.getTestMessageUrl(info),
-    };
 }
 
 async function sendBookingCancelledEmail(booking) {
@@ -105,10 +97,6 @@ async function sendBookingCancelledEmail(booking) {
         html,
     });
     console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
-    return {
-        messageId: info.messageId,
-        previewUrl: nodemailer.getTestMessageUrl(info),
-    };
 }
 
 async function sendBookingConfirmedEmail(booking) {
@@ -129,32 +117,30 @@ async function sendBookingConfirmedEmail(booking) {
         html,
     });
     console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
-    return { messageId: info.messageId, previewUrl: nodemailer.getTestMessageUrl(info) };
 }
 
 async function sendAccommodationApprovedEmail(accommodation) {
-  const html = renderTemplate("accommodationApproved", {
-    fullName: accommodation.admin?.fullName,
-    accommodationName: accommodation.name,
-  });
-  const info = await transporter.sendMail({
-    from: `"Hospedar" <${SMTP_USER}>`,
-    to: accommodation.admin?.email,
-    subject: "Tu hospedaje fue aprobado en Hospedar",
-    text: "Tu hospedaje fue aprobado.",
-    html,
-  });
-  console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
-  return { messageId: info.messageId, previewUrl: nodemailer.getTestMessageUrl(info) };
+    const html = renderTemplate("accommodationApproved", {
+        fullName: accommodation.admin?.fullName,
+        accommodationName: accommodation.name,
+    });
+    const info = await transporter.sendMail({
+        from: `"Hospedar" <${SMTP_USER}>`,
+        to: accommodation.admin?.email,
+        subject: "Tu hospedaje fue aprobado en Hospedar",
+        text: "Tu hospedaje fue aprobado.",
+        html,
+    });
+    console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
 }
 
 export {
     transporter,
+    renderTemplate,
     verifyEmailConnection,
     sendRegisterEmail,
     sendBookingCreatedEmail,
     sendBookingCancelledEmail,
     sendBookingConfirmedEmail,
     sendAccommodationApprovedEmail,
-    renderTemplate,
-};
+}

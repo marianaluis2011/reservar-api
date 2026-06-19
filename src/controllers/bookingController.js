@@ -17,7 +17,7 @@ const bookingController = {
       if (roomDoc.accommodation._id.toString() !== accommodation) {
         return res.status(400).json({ message: 'La habitación no pertenece al hospedaje seleccionado' });
       }
-      const existingBooking = await bookingService.buscarSolapada(room, checkIn, checkOut);
+      const existingBooking = await bookingService.findOverlapping(room, checkIn, checkOut);
       if (existingBooking) {
         return res.status(400).json({ message: 'La habitación ya está reservada en esas fechas' });
       }
