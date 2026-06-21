@@ -9,13 +9,24 @@ import provinciaRoutes from './routes/province.routes.js';
 import { validateJwt } from './middlewares/validateJwt.js';
 import multer from 'multer';
 import { verifyEmailConnection } from "./services/emailService.js";
+import cors from 'cors'; 
+import adminRoutes from "./routes/admin.routes.js";
 
 const app = express();
 
 conectarDB();
 
+// ✅ Configuración de CORS (antes de las rutas)
+app.use(cors({
+  origin: 'http://localhost:5173', // tu frontend en dev
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Rutas
 app.use('/api/auth', authRoutes);
 
 app.get('/api/protected', validateJwt, (req, res) => {
@@ -29,7 +40,9 @@ app.use('/api/hospedajes', hospedajeRoutes);
 app.use('/api/habitaciones', habitacionRoutes);
 app.use('/api/provincias', provinciaRoutes);
 app.use('/api/reservas', reservaRoutes);
+app.use("/api/admin", adminRoutes);
 
+// Manejo de errores
 app.use((req, res) => {
   res.status(404).json({ message: "Ruta no encontrada" });
 });
