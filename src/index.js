@@ -6,6 +6,7 @@ import hospedajeRoutes from './routes/accommodation.routes.js';
 import habitacionRoutes from './routes/room.routes.js';
 import reservaRoutes from './routes/booking.routes.js';
 import provinciaRoutes from './routes/province.routes.js';
+import usuarioRoutes from './routes/user.routes.js';
 import { validateJwt } from './middlewares/validateJwt.js';
 import multer from 'multer';
 import cors from 'cors';
@@ -30,6 +31,7 @@ app.use('/api/hospedajes', hospedajeRoutes);
 app.use('/api/habitaciones', habitacionRoutes);
 app.use('/api/provincias', provinciaRoutes);
 app.use('/api/reservas', reservaRoutes);
+app.use('/api/usuarios', usuarioRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Ruta no encontrada" });
