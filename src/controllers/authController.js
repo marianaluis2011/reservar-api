@@ -6,6 +6,7 @@ const authController = {
   register: async (req, res) => {
     try {
       const { fullName, email, password, role } = req.body;
+      const existingUser = await userService.findUserByEmail(email);
       if (existingUser) {
         return res.status(409).json({ message: 'El correo electrónico ya está registrado.' });
       }
