@@ -23,6 +23,14 @@ const bookingService = {
     return Booking.find({ user: userId }).populate('accommodation room');
   },
 
+  listarPorAccommodation: async (accommodationId) => {
+  return Booking.find({ accommodation: accommodationId })
+    .populate('user', 'fullName email')
+    .populate('room', 'name pricePerNight')
+    .populate('accommodation', 'name')
+    .sort({ createdAt: -1 });
+},
+
   obtenerPorId: async (id) => {
     return Booking.findById(id)
       .populate('user', 'fullName email')
