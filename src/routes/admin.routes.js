@@ -1,12 +1,15 @@
-import { Router } from "express";
-import AdminController from "../controllers/adminController.js";
-import { validateJwt } from "../middlewares/validateJwt.js";
+import { Router } from 'express';
+import adminController from '../controllers/adminController.js';
+import { validateJwt } from '../middlewares/validateJwt.js';
+import { authorize } from '../middlewares/authorize.js';
 
 const router = Router();
 
-// ✅ todas las rutas de admin protegidas con JWT
-router.get("/stats", validateJwt, AdminController.getStats);
-router.get("/accommodations", validateJwt, AdminController.getAccommodations);
-router.get("/users", validateJwt, AdminController.getUsers);
+router.get(
+  '/stats',
+  validateJwt,
+  authorize(['super_admin']),
+  adminController.getStats
+);
 
 export default router;

@@ -6,11 +6,11 @@ import hospedajeRoutes from './routes/accommodation.routes.js';
 import habitacionRoutes from './routes/room.routes.js';
 import reservaRoutes from './routes/booking.routes.js';
 import provinciaRoutes from './routes/province.routes.js';
+import usuarioRoutes from './routes/user.routes.js';
 import { validateJwt } from './middlewares/validateJwt.js';
 import multer from 'multer';
 import cors from 'cors';
 import { verifyEmailConnection } from "./services/emailService.js";
-import cors from 'cors'; 
 import adminRoutes from "./routes/admin.routes.js";
 
 const app = express();
@@ -30,7 +30,7 @@ app.use(express.urlencoded({ extended: true }));
 // Rutas
 app.use('/api/auth', authRoutes);
 
-app.get('/api/protected', validateJwt, (req, res) => {
+app.get('/api/protected', validateJwt, (  req, res) => {
   res.status(200).json({
     message: '¡Acceso concedido a la ruta protegida!',
     user: req.user
@@ -42,6 +42,7 @@ app.use('/api/habitaciones', habitacionRoutes);
 app.use('/api/provincias', provinciaRoutes);
 app.use('/api/reservas', reservaRoutes);
 app.use("/api/admin", adminRoutes);
+app.use('/api/usuarios', usuarioRoutes);
 
 // Manejo de errores
 app.use((req, res) => {

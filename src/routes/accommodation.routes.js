@@ -9,8 +9,39 @@ import { upload } from '../config/cloudinary.js';
 const router = Router();
 
 router.get('/', accommodationController.listarPublico);
-router.get('/:id', accommodationIdParamValidator, validateResult, accommodationController.obtenerDetalle);
-router.patch('/:id/aprobar', validateJwt, authorize(['super_admin']), accommodationIdParamValidator, validateResult, accommodationController.aprobar);
+
+router.get(
+  '/admin/todos',
+  validateJwt,
+  authorize(['super_admin']),
+  accommodationController.listarTodos
+);
+
+router.patch(
+  '/:id/aprobar',
+  validateJwt,
+  authorize(['super_admin']),
+  accommodationIdParamValidator,
+  validateResult,
+  accommodationController.aprobar
+);
+
+router.patch(
+  '/:id/estado',
+  validateJwt,
+  authorize(['super_admin']),
+  accommodationIdParamValidator,
+  validateResult,
+  accommodationController.cambiarEstado
+);
+
+router.get(
+  '/:id',
+  accommodationIdParamValidator,
+  validateResult,
+  accommodationController.obtenerDetalle
+);
+
 router.post(
   '/',
   validateJwt,
@@ -32,6 +63,13 @@ router.put(
   accommodationController.actualizar
 );
 
-router.delete('/:id', validateJwt, authorize(['host', 'super_admin']), accommodationIdParamValidator, validateResult, accommodationController.eliminar);
+router.delete(
+  '/:id',
+  validateJwt,
+  authorize(['host', 'super_admin']),
+  accommodationIdParamValidator,
+  validateResult,
+  accommodationController.eliminar
+);
 
 export default router;

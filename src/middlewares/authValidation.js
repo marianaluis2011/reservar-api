@@ -14,7 +14,7 @@ export const registerValidator = [
     .bail()
     .isLength({ min: 8, max: 64 }).withMessage('La contraseña debe tener entre 8 y 64 caracteres'),
   body('role').optional()
-    .isIn(['guest', 'host', 'super_admin']).withMessage('Rol inválido')
+    .isIn(['guest', 'host']).withMessage('Rol inválido')
 ];
 
 export const loginValidator = [
