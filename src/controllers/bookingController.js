@@ -144,6 +144,7 @@ const bookingController = {
       res.status(500).json({ message: 'Error al cancelar la reserva' });
     }
   },
+  
   listarPorUsuario: async (req, res) => {
     try {
       const bookings = await bookingService.listarPorUsuario(req.user.id);
