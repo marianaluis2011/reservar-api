@@ -41,6 +41,6 @@ const authController = {
       res.status(500).json({ message: 'Error al iniciar sesión', error: error.message });
     }
   }
-},
+};
 
 export default authController;
