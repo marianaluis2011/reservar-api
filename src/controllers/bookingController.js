@@ -6,6 +6,7 @@ import {
   sendBookingCancelledEmail,
   sendBookingConfirmedEmail,
 } from "../services/emailService.js";
+import userService from '../services/userService.js';
 
 const bookingController = {
   listarPorOwner: async (req, res) => {
@@ -20,6 +21,85 @@ const bookingController = {
       res.status(200).json(bookings);
     } catch (error) {
       res.status(500).json({ message: 'Error al obtener las reservas del hospedaje' });
+    }
+  },
+
+  crearPorOwner: async (req, res) => {
+    try {
+      const { guestEmail, room, checkIn, checkOut } = req.body;
+
+      if (!guestEmail || !room || !checkIn || !checkOut) {
+        return res.status(400).json({ message: 'Faltan datos para crear la reserva' });
+      }
+
+      const guest = await userService.findUserByEmail(guestEmail);
+
+      if (!guest) {
+        return res.status(404).json({ message: 'No existe un cliente registrado con ese email' });
+      }
+
+      if (guest.role !== 'guest') {
+        return res.status(400).json({ message: 'El email ingresado no pertenece a un cliente' });
+      }
+
+      const accommodation = await accommodationService.obtenerPorAdmin(req.user.id);
+
+      if (!accommodation) {
+        return res.status(404).json({ message: 'No tienes un hospedaje asignado' });
+      }
+
+      const roomDoc = await roomService.obtenerConAccommodation(room);
+
+      if (!roomDoc) {
+        return res.status(404).json({ message: 'Habitación no encontrada' });
+      }
+
+      if (roomDoc.accommodation._id.toString() !== accommodation._id.toString()) {
+        return res.status(403).json({ message: 'No tienes permiso para reservar esta habitación' });
+      }
+
+      if (roomDoc.status !== 'activa') {
+        return res.status(400).json({ message: 'Esta habitación no se encuentra activa para reservas' });
+      }
+
+      const checkInDate = new Date(checkIn);
+      const checkOutDate = new Date(checkOut);
+
+      if (checkOutDate <= checkInDate) {
+        return res.status(400).json({ message: 'La fecha de salida debe ser posterior a la de entrada' });
+      }
+
+      const existingBooking = await bookingService.findOverlapping(room, checkIn, checkOut);
+
+      if (existingBooking) {
+        return res.status(400).json({ message: 'La habitación ya está reservada en esas fechas' });
+      }
+
+      const nights = Math.max(
+        1,
+        Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24))
+      );
+
+      const totalPrice = nights * roomDoc.pricePerNight;
+
+      const newBooking = await bookingService.crear({
+        user: guest._id,
+        accommodation: accommodation._id,
+        room,
+        checkIn,
+        checkOut,
+        totalPrice,
+        status: 'confirmada'
+      });
+
+      const bookingWithDetails = await bookingService.obtenerPorId(newBooking._id);
+
+      res.status(201).json({
+        message: 'Reserva creada correctamente',
+        booking: bookingWithDetails
+      });
+    } catch (error) {
+      res.status(500).json({ message: 'Error al crear la reserva', error: error.message });
     }
   },
 
@@ -101,6 +181,7 @@ const bookingController = {
       res.status(500).json({ message: 'Error al confirmar la reserva' });
     }
   },
+
   cancelar: async (req, res) => {
     try {
       const booking = await bookingService.obtenerPorId(req.params.id);
@@ -144,7 +225,7 @@ const bookingController = {
       res.status(500).json({ message: 'Error al cancelar la reserva' });
     }
   },
-  
+
   listarPorUsuario: async (req, res) => {
     try {
       const bookings = await bookingService.listarPorUsuario(req.user.id);
