@@ -1,4 +1,5 @@
 import userService from '../services/userService.js';
+import accommodationService from '../services/accommodationService.js';
 
 const userController = {
   crearAdmin: async (req, res) => {
