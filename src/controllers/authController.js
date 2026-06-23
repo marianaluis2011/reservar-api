@@ -31,8 +31,8 @@ const authController = {
         return res.status(401).json({ message: 'Credenciales inválidas.' });
       }
       if (!user.isActive) {
-  return res.status(403).json({ message: 'Usuario deshabilitado.' });
-}
+        return res.status(403).json({ message: 'Usuario deshabilitado.' });
+      }
       const token = generateToken({ id: user._id, email: user.email, role: user.role });
       res.status(200).json({
         message: 'Inicio de sesión exitoso.',
