@@ -22,6 +22,7 @@ const authController = {
     }
   },
 
+
   login: async (req, res) => {
     try {
       const { email, password } = req.body;
@@ -38,7 +39,31 @@ const authController = {
     } catch (error) {
       res.status(500).json({ message: 'Error al iniciar sesión', error: error.message });
     }
+
+    const token = generateToken({
+      id: user._id,
+      email: user.email,
+      role: user.role
+    });
+
+    res.status(200).json({
+      message: "Inicio de sesión exitoso.",
+      token,
+      user: {
+        id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        role: user.role
+      }
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: 'Error al iniciar sesión',
+      error: error.message
+    });
   }
+}
 };
 
 export default authController;
