@@ -8,8 +8,9 @@ import { authorize } from '../middlewares/authorize.js';
 const router = Router();
 
 router.post('/', validateJwt, createBookingValidator, validateResult, bookingController.crear);
-router.get('/:id', validateJwt, bookingIdParamValidator, validateResult, bookingController.obtenerDetalle);
+router.get('/owner', validateJwt, authorize(['host']), bookingController.listarPorOwner);
 router.get('/', validateJwt, bookingController.listarPorUsuario);
+router.get('/:id', validateJwt, bookingIdParamValidator, validateResult, bookingController.obtenerDetalle);
 router.patch('/:id/cancelar', validateJwt, bookingIdParamValidator, validateResult, bookingController.cancelar);
 router.patch('/:id/confirmar', validateJwt, authorize(['host', 'super_admin']), bookingIdParamValidator, validateResult, bookingController.confirmar);
 
