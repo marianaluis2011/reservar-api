@@ -44,6 +44,17 @@ const bookingService = {
       { new: true }
     );
   },
+
+  cancelarPorId: async (id) => {
+  return Booking.findByIdAndUpdate(
+    id,
+    { status: 'cancelada' },
+    { new: true }
+  )
+    .populate('user', 'fullName email')
+    .populate('accommodation room');
+},
+
   confirmar: async (id) => {
     return Booking.findByIdAndUpdate(
       id,
