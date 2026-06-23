@@ -102,48 +102,48 @@ const bookingController = {
     }
   },
   cancelar: async (req, res) => {
-  try {
-    const booking = await bookingService.obtenerPorId(req.params.id);
-
-    if (!booking) {
-      return res.status(404).json({ message: 'Reserva no encontrada' });
-    }
-
-    const bookingUserId = booking.user?._id?.toString() || booking.user?.toString();
-    const accommodationAdminId = booking.accommodation?.admin?._id?.toString() || booking.accommodation?.admin?.toString();
-
-    const isBookingOwner = bookingUserId === req.user.id;
-    const isAccommodationOwner = accommodationAdminId === req.user.id;
-    const isSuperAdmin = req.user.role === 'super_admin';
-
-    if (!isBookingOwner && !isAccommodationOwner && !isSuperAdmin) {
-      return res.status(403).json({ message: 'No tienes permiso para cancelar esta reserva' });
-    }
-
-    if (booking.status === 'cancelada') {
-      return res.status(400).json({ message: 'La reserva ya se encuentra cancelada' });
-    }
-
-    const cancelledBooking = await bookingService.cancelarPorId(req.params.id);
-
-    let emailSent = false;
-
     try {
-      await sendBookingCancelledEmail(cancelledBooking);
-      emailSent = true;
-    } catch (error) {
-      emailSent = false;
-    }
+      const booking = await bookingService.obtenerPorId(req.params.id);
 
-    res.status(200).json({
-      message: 'Reserva cancelada correctamente',
-      booking: cancelledBooking,
-      emailSent
-    });
-  } catch (error) {
-    res.status(500).json({ message: 'Error al cancelar la reserva' });
-  }
-},
+      if (!booking) {
+        return res.status(404).json({ message: 'Reserva no encontrada' });
+      }
+
+      const bookingUserId = booking.user?._id?.toString() || booking.user?.toString();
+      const accommodationAdminId = booking.accommodation?.admin?._id?.toString() || booking.accommodation?.admin?.toString();
+
+      const isBookingOwner = bookingUserId === req.user.id;
+      const isAccommodationOwner = accommodationAdminId === req.user.id;
+      const isSuperAdmin = req.user.role === 'super_admin';
+
+      if (!isBookingOwner && !isAccommodationOwner && !isSuperAdmin) {
+        return res.status(403).json({ message: 'No tienes permiso para cancelar esta reserva' });
+      }
+
+      if (booking.status === 'cancelada') {
+        return res.status(400).json({ message: 'La reserva ya se encuentra cancelada' });
+      }
+
+      const cancelledBooking = await bookingService.cancelarPorId(req.params.id);
+
+      let emailSent = false;
+
+      try {
+        await sendBookingCancelledEmail(cancelledBooking);
+        emailSent = true;
+      } catch (error) {
+        emailSent = false;
+      }
+
+      res.status(200).json({
+        message: 'Reserva cancelada correctamente',
+        booking: cancelledBooking,
+        emailSent
+      });
+    } catch (error) {
+      res.status(500).json({ message: 'Error al cancelar la reserva' });
+    }
+  },
   listarPorUsuario: async (req, res) => {
     try {
       const bookings = await bookingService.listarPorUsuario(req.user.id);
