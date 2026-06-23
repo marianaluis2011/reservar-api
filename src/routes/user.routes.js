@@ -7,6 +7,7 @@ import { validateResult } from '../middlewares/validateResult.js';
 
 const router = Router();
 
+router.post('/admin', validateJwt, authorize(['super_admin']), registerValidator, validateResult, userController.crearAdmin);
 router.get('/', validateJwt, authorize(['super_admin']), userController.obtenerTodos);
 router.patch('/:id/estado', validateJwt, authorize(['super_admin']), userController.cambiarEstado);
 
