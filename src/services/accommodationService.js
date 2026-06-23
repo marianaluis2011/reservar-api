@@ -30,7 +30,9 @@ const accommodationService = {
   },
 
   listarTodos: async () => {
-    return Accommodation.find().populate('admin', 'fullName email');
+    return Accommodation.find()
+      .populate('province', 'name')
+      .populate('admin', 'fullName email');
   },
 
   cambiarEstado: async (id, status) => {
