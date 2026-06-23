@@ -29,6 +29,18 @@ const accommodationService = {
     ).populate('admin', 'fullName email');
   },
 
+  listarTodos: async () => {
+    return Accommodation.find().populate('admin', 'fullName email');
+  },
+
+  cambiarEstado: async (id, status) => {
+    return Accommodation.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    );
+  },
+
   eliminar: async (id) => {
     return Accommodation.deleteOne({ _id: id });
   }

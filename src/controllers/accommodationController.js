@@ -73,6 +73,28 @@ const accommodationController = {
     }
   },
 
+  listarTodos: async (req, res) => {
+    try {
+      const hospedajes = await accommodationService.listarTodos();
+      res.status(200).json(hospedajes);
+    } catch (error) {
+      res.status(500).json({ message: 'Error al obtener los hospedajes' });
+    }
+  },
+
+  cambiarEstado: async (req, res) => {
+    try {
+      const { status } = req.body;
+      const hospedaje = await accommodationService.cambiarEstado(req.params.id, status);
+      if (!hospedaje) {
+        return res.status(404).json({ message: 'Hospedaje no encontrado' });
+      }
+      res.status(200).json({ message: `Hospedaje ${status} correctamente`, hospedaje });
+    } catch (error) {
+      res.status(500).json({ message: 'Error al cambiar el estado del hospedaje' });
+    }
+  },
+
   eliminar: async (req, res) => {
     try {
       const filtro = { _id: req.params.id };

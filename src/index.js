@@ -11,7 +11,6 @@ import { validateJwt } from './middlewares/validateJwt.js';
 import multer from 'multer';
 import cors from 'cors';
 import { verifyEmailConnection } from "./services/emailService.js";
-import cors from 'cors'; 
 import adminRoutes from "./routes/admin.routes.js";
 
 const app = express();
@@ -31,7 +30,7 @@ app.use(express.urlencoded({ extended: true }));
 // Rutas
 app.use('/api/auth', authRoutes);
 
-app.get('/api/protected', validateJwt, (req, res) => {
+app.get('/api/protected', validateJwt, (  req, res) => {
   res.status(200).json({
     message: '¡Acceso concedido a la ruta protegida!',
     user: req.user
