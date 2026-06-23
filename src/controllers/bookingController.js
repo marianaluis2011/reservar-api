@@ -146,8 +146,10 @@ const bookingController = {
       if (req.user.role !== 'super_admin' && booking.accommodation.admin.toString() !== req.user.id) {
         return res.status(403).json({ message: 'No tienes permiso para confirmar esta reserva' });
       }
-      if (booking.status !== 'pendiente') {
-        return res.status(400).json({ message: 'Solo se pueden confirmar reservas pendientes' });
+      if (!['pendiente', 'cancelada'].includes(booking.status)) {
+        return res.status(400).json({
+          message: 'Solo se pueden confirmar reservas pendientes o reactivar reservas canceladas'
+        });
       }
       const confirmed = await bookingService.confirmar(req.params.id);
       let emailSent = false;
