@@ -83,17 +83,21 @@ const accommodationController = {
   },
 
   cambiarEstado: async (req, res) => {
-    try {
-      const { status } = req.body;
-      const hospedaje = await accommodationService.cambiarEstado(req.params.id, status);
-      if (!hospedaje) {
-        return res.status(404).json({ message: 'Hospedaje no encontrado' });
-      }
-      res.status(200).json({ message: `Hospedaje ${status} correctamente`, hospedaje });
-    } catch (error) {
-      res.status(500).json({ message: 'Error al cambiar el estado del hospedaje' });
+  try {
+    const { status } = req.body;
+    const allowedStatuses = ['pendiente', 'aprobado', 'rechazado', 'suspendido'];
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({ message: 'Estado de hospedaje inválido' });
     }
-  },
+    const hospedaje = await accommodationService.cambiarEstado(req.params.id, status);
+    if (!hospedaje) {
+      return res.status(404).json({ message: 'Hospedaje no encontrado' });
+    }
+    res.status(200).json({ message: `Hospedaje ${status} correctamente`, hospedaje });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al cambiar el estado del hospedaje' });
+  }
+},
 
   eliminar: async (req, res) => {
     try {
