@@ -159,7 +159,15 @@ const bookingController = {
       } catch (error) {
         emailSent = false;
       }
-      res.status(200).json({ message: 'Reserva confirmada correctamente', booking: confirmed, emailSent });
+      const message =
+        booking.status === 'cancelada'
+          ? 'Reserva reactivada correctamente'
+          : 'Reserva confirmada correctamente';
+      const confirmedBooking = await bookingService.confirmar(req.params.id);
+      res.status(200).json({
+        message,
+        booking: confirmedBooking
+      });
     } catch (error) {
       res.status(500).json({ message: 'Error al confirmar la reserva' });
     }
