@@ -8,6 +8,21 @@ import {
 } from "../services/emailService.js";
 
 const bookingController = {
+  listarPorOwner: async (req, res) => {
+  try {
+    const accommodation = await accommodationService.obtenerPorAdmin(req.user.id);
+
+    if (!accommodation) {
+      return res.status(404).json({ message: 'No tienes un hospedaje asignado' });
+    }
+
+    const bookings = await bookingService.listarPorAccommodation(accommodation._id);
+    res.status(200).json(bookings);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener las reservas del hospedaje' });
+  }
+},
+
   crear: async (req, res) => {
     try {
       const { room, accommodation, checkIn, checkOut } = req.body;
