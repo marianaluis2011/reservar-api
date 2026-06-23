@@ -1,6 +1,29 @@
 import userService from '../services/userService.js';
 
 const userController = {
+    crearAdmin: async (req, res) => {
+    try {
+      const { fullName, email, password } = req.body;
+      const existingUser = await userService.findUserByEmail(email);
+      if (existingUser) {
+        return res.status(409).json({ message: 'El correo electrónico ya está registrado.' });
+      }
+      const user = await userService.createUser({ fullName, email, password, role: 'host' });
+      res.status(201).json({
+        message: 'Administrador creado correctamente',
+        user: {
+          id: user._id,
+          fullName: user.fullName,
+          email: user.email,
+          role: user.role,
+          isActive: user.isActive
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ message: 'Error al crear administrador', error: error.message });
+    }
+  },
+  
   obtenerTodos: async (req, res) => {
     try {
       const users = await userService.obtenerTodos();
