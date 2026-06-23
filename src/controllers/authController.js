@@ -6,9 +6,6 @@ const authController = {
   register: async (req, res) => {
     try {
       const { fullName, email, password, role } = req.body;
-      if (!fullName || !email || !password) {
-        return res.status(400).json({ message: 'Nombre completo, email y contraseña son requeridos.' });
-      }
       const existingUser = await userService.findUserByEmail(email);
       if (existingUser) {
         return res.status(409).json({ message: 'El correo electrónico ya está registrado.' });
@@ -25,14 +22,22 @@ const authController = {
     }
   },
 
- login: async (req, res) => {
-  try {
-    const { email, password } = req.body;
 
-    const user = await userService.findUserByEmail(email);
-
-    if (!user || !(await user.comparePassword(password))) {
-      return res.status(401).json({ message: 'Credenciales inválidas.' });
+  login: async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      const user = await userService.findUserByEmail(email);
+      if (!user || !(await user.comparePassword(password))) {
+        return res.status(401).json({ message: 'Credenciales inválidas.' });
+      }
+      const token = generateToken({ id: user._id, email: user.email, role: user.role });
+      res.status(200).json({
+        message: 'Inicio de sesión exitoso.',
+        token,
+        user: { id: user._id, fullName: user.fullName, email: user.email, role: user.role },
+      });
+    } catch (error) {
+      res.status(500).json({ message: 'Error al iniciar sesión', error: error.message });
     }
 
     const token = generateToken({

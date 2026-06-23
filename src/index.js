@@ -8,6 +8,7 @@ import reservaRoutes from './routes/booking.routes.js';
 import provinciaRoutes from './routes/province.routes.js';
 import { validateJwt } from './middlewares/validateJwt.js';
 import multer from 'multer';
+import cors from 'cors';
 import { verifyEmailConnection } from "./services/emailService.js";
 import cors from 'cors'; 
 import adminRoutes from "./routes/admin.routes.js";
