@@ -1,5 +1,6 @@
 import bookingService from '../services/bookingService.js';
 import roomService from '../services/roomService.js';
+import accommodationService from '../services/accommodationService.js';
 import {
   sendBookingCreatedEmail,
   sendBookingCancelledEmail,
