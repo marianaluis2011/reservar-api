@@ -1,7 +1,7 @@
 import userService from '../services/userService.js';
 
 const userController = {
-    crearAdmin: async (req, res) => {
+  crearAdmin: async (req, res) => {
     try {
       const { fullName, email, password } = req.body;
       const existingUser = await userService.findUserByEmail(email);
@@ -23,7 +23,7 @@ const userController = {
       res.status(500).json({ message: 'Error al crear administrador', error: error.message });
     }
   },
-  
+
   obtenerTodos: async (req, res) => {
     try {
       const users = await userService.obtenerTodos();
