@@ -17,6 +17,13 @@ router.get(
   accommodationController.listarTodos
 );
 
+router.get(
+  '/owner/me',
+  validateJwt,
+  authorize(['host']),
+  accommodationController.obtenerMiHospedaje
+);
+
 router.patch(
   '/:id/aprobar',
   validateJwt,

@@ -17,6 +17,12 @@ const accommodationService = {
     return Accommodation.findOne(filtro);
   },
 
+  obtenerPorAdmin: async (adminId) => {
+    return Accommodation.findOne({ admin: adminId })
+      .populate('province', 'name')
+      .populate('admin', 'fullName email');
+  },
+
   actualizar: async (id, data) => {
     return Accommodation.findOneAndUpdate({ _id: id }, data, { returnDocument: 'after' });
   },
