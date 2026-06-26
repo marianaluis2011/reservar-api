@@ -12,6 +12,7 @@ import multer from 'multer';
 import cors from 'cors';
 import { verifyEmailConnection } from "./services/emailService.js";
 import adminRoutes from "./routes/admin.routes.js";
+import { CLIENT_URL } from './config/env.js';
 
 const app = express();
 
@@ -19,7 +20,7 @@ conectarDB();
 
 // ✅ Configuración de CORS (antes de las rutas)
 app.use(cors({
-  origin: 'http://localhost:5173', // tu frontend en dev
+  origin: CLIENT_URL, // tu frontend en dev
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
