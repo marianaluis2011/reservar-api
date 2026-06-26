@@ -18,6 +18,7 @@ export const createBookingValidator = [
       const checkIn = new Date(value);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
+      checkIn.setHours(0, 0, 0, 0);
       if (checkIn < today) {
         throw new Error('La fecha de entrada no puede ser en el pasado');
       }
