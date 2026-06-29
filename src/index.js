@@ -7,6 +7,7 @@ import habitacionRoutes from './routes/room.routes.js';
 import reservaRoutes from './routes/booking.routes.js';
 import provinciaRoutes from './routes/province.routes.js';
 import usuarioRoutes from './routes/user.routes.js';
+import chatRoutes from './routes/chat.routes.js';
 import { validateJwt } from './middlewares/validateJwt.js';
 import multer from 'multer';
 import cors from 'cors';
@@ -44,6 +45,7 @@ app.use('/api/provincias', provinciaRoutes);
 app.use('/api/reservas', reservaRoutes);
 app.use("/api/admin", adminRoutes);
 app.use('/api/usuarios', usuarioRoutes);
+app.use('/api/chat', chatRoutes);
 
 // Manejo de errores
 app.use((req, res) => {
