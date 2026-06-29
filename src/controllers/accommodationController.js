@@ -96,8 +96,9 @@ const accommodationController = {
 
   listarTodos: async (req, res) => {
     try {
-      const hospedajes = await accommodationService.listarTodos();
-      res.status(200).json(hospedajes);
+      const { page, limit } = req.query;
+      const data = await accommodationService.listarTodos({ page, limit });
+      res.status(200).json(data);
     } catch (error) {
       res.status(500).json({ message: 'Error al obtener los hospedajes' });
     }

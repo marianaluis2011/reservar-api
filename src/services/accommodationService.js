@@ -35,10 +35,34 @@ const accommodationService = {
     ).populate('admin', 'fullName email');
   },
 
-  listarTodos: async () => {
-    return Accommodation.find()
-      .populate('province', 'name')
-      .populate('admin', 'fullName email');
+  listarTodos: async ({ page = 1, limit = 10 } = {}) => {
+    const currentPage = parseInt(page);
+    const perPage = parseInt(limit);
+    const skip = (currentPage - 1) * perPage;
+
+    const [accommodations, total] = await Promise.all([
+      Accommodation.find()
+        .populate('province', 'name')
+        .populate('admin', 'fullName email')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(perPage),
+      Accommodation.countDocuments(),
+    ]);
+
+    const totalPages = Math.ceil(total / perPage);
+
+    return {
+      accommodations,
+      pagination: {
+        total,
+        totalPages,
+        currentPage,
+        perPage,
+        hasNextPage: currentPage < totalPages,
+        hasPrevPage: currentPage > 1,
+      },
+    };
   },
 
   cambiarEstado: async (id, status) => {
