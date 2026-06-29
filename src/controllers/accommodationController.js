@@ -4,6 +4,20 @@ import { sendAccommodationApprovedEmail } from '../services/emailService.js';
 
 const accommodationController = {
 
+  obtenerMiHospedaje: async (req, res) => {
+  try {
+    const accommodation = await accommodationService.obtenerPorAdmin(req.user.id);
+
+    if (!accommodation) {
+      return res.status(404).json({ message: 'No tienes un hospedaje asignado' });
+    }
+
+    res.status(200).json(accommodation);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener tu hospedaje' });
+  }
+},
+
   registrar: async (req, res) => {
     try {
       const mainImage = req.files?.mainImage ? req.files.mainImage[0].path : req.body.mainImage;
