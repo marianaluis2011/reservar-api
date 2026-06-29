@@ -58,7 +58,14 @@ const accommodationController = {
 
   actualizar: async (req, res) => {
     try {
-      const updated = await accommodationService.actualizar(req.params.id, req.body);
+      const dataToUpdate = { ...req.body };
+      if (req.files?.mainImage) {
+        dataToUpdate.mainImage = req.files.mainImage[0].path;
+      }
+      if (req.files?.gallery && req.files.gallery.length > 0) {
+        dataToUpdate.gallery = req.files.gallery.map(file => file.path);
+      }
+      const updated = await accommodationService.actualizar(req.params.id, dataToUpdate);
       if (!updated) {
         return res.status(404).json({ message: 'Hospedaje no encontrado o no tienes permiso para editarlo' });
       }
