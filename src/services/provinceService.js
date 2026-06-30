@@ -7,6 +7,10 @@ const provinceService = {
 
   listar: async () => {
     return Province.find().sort({ name: 1 });
+  },
+
+  buscarPorNombre: async (nombre) => {
+    return Province.findOne({ name: new RegExp(`^${nombre}$`, 'i') });
   }
 };
 

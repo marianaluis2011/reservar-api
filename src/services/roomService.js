@@ -10,7 +10,7 @@ const roomService = {
   },
 
   obtenerPorId: async (id) => {
-    return Room.findById(id).populate('accommodation', 'name');
+    return Room.findById(id).populate('accommodation', 'name whatsapp');
   },
 
   obtenerConAccommodation: async (id) => {
@@ -23,6 +23,20 @@ const roomService = {
 
   eliminar: async (id) => {
     return Room.findByIdAndDelete(id);
+  },
+
+  listarMasBaratas: async (limit = 5) => {
+    return Room.find({ status: 'activa' })
+      .sort({ pricePerNight: 1 })
+      .limit(limit)
+      .populate('accommodation', 'name');
+  },
+
+  listarMasCaras: async (limit = 5) => {
+    return Room.find({ status: 'activa' })
+      .sort({ pricePerNight: -1 })
+      .limit(limit)
+      .populate('accommodation', 'name');
   }
 };
 

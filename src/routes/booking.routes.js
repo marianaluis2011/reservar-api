@@ -11,6 +11,7 @@ router.post('/', validateJwt, createBookingValidator, validateResult, bookingCon
 router.post('/owner', validateJwt, authorize(['host']), bookingController.crearPorOwner);
 router.get('/owner', validateJwt, authorize(['host']), bookingController.listarPorOwner);
 router.get('/', validateJwt, bookingController.listarPorUsuario);
+router.get('/ocupadas/:roomId', bookingController.fechasOcupadas);
 router.get('/:id', validateJwt, bookingIdParamValidator, validateResult, bookingController.obtenerDetalle);
 router.patch('/:id/cancelar', validateJwt, bookingIdParamValidator, validateResult, bookingController.cancelar);
 router.patch('/:id/confirmar', validateJwt, authorize(['host', 'super_admin']), bookingIdParamValidator, validateResult, bookingController.confirmar);

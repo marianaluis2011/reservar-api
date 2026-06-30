@@ -15,10 +15,10 @@ export const createBookingValidator = [
     .isISO8601().withMessage('La fecha de entrada debe ser una fecha válida')
     .bail()
     .custom((value) => {
-      const checkIn = new Date(value);
+      // value llega como "YYYY-MM-DD". Comparamos por día calendario sin mezclar husos.
       const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      if (checkIn < today) {
+      const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+      if (value < todayStr) {
         throw new Error('La fecha de entrada no puede ser en el pasado');
       }
       return true;

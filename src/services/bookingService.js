@@ -23,6 +23,10 @@ const bookingService = {
     return Booking.find({ user: userId }).populate('accommodation room');
   },
 
+  listarOcupadasPorRoom: async (roomId) => {
+    return Booking.find({ room: roomId, status: { $ne: 'cancelada' } }).select('checkIn checkOut');
+  },
+
   listarPorAccommodation: async (accommodationId) => {
   return Booking.find({ accommodation: accommodationId })
     .populate('user', 'fullName email')

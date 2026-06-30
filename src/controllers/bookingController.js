@@ -75,9 +75,17 @@ const bookingController = {
         status: 'pendiente'
       });
       const bookingWithDetails = await bookingService.obtenerPorId(newBooking._id);
+      let emailSent = false;
+      try {
+        await sendBookingCreatedEmail(bookingWithDetails);
+        emailSent = true;
+      } catch (error) {
+        emailSent = false;
+      }
       res.status(201).json({
         message: 'Reserva creada correctamente y quedó pendiente de aprobación',
-        booking: bookingWithDetails
+        booking: bookingWithDetails,
+        emailSent
       });
     } catch (error) {
       res.status(500).json({ message: 'Error al crear la reserva', error: error.message });
@@ -223,6 +231,15 @@ const bookingController = {
       res.status(200).json(bookings);
     } catch (error) {
       res.status(500).json({ message: 'Error al obtener reservas' });
+    }
+  },
+
+  fechasOcupadas: async (req, res) => {
+    try {
+      const fechas = await bookingService.listarOcupadasPorRoom(req.params.roomId);
+      res.status(200).json(fechas);
+    } catch (error) {
+      res.status(500).json({ message: 'Error al obtener fechas ocupadas' });
     }
   }
 };
