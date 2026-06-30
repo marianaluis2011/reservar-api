@@ -21,7 +21,7 @@ conectarDB();
 
 // ✅ Configuración de CORS (antes de las rutas)
 app.use(cors({
-  origin: CLIENT_URL, // tu frontend en dev
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
