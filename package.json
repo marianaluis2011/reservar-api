@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
-    "seed:provinces": "node src/seeders/provinceSeeder.js"
+    "seed:provinces": "node src/seeders/provinceSeeder.js",
+    "seed:owners": "node src/seeders/ownerSeeder.js"
   },
   "keywords": [],
   "author": "",
