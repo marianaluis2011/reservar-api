@@ -10,7 +10,7 @@ const roomService = {
   },
 
   obtenerPorId: async (id) => {
-    return Room.findById(id).populate('accommodation', 'name');
+    return Room.findById(id).populate('accommodation', 'name whatsapp');
   },
 
   obtenerConAccommodation: async (id) => {
