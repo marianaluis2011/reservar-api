@@ -29,8 +29,7 @@ const accommodationSchema = new mongoose.Schema({
     lowercase: true
   },
   whatsapp: {
-    type: String,
-    required: [true, 'El número de WhatsApp es necesario para las reservas']
+    type: String
   },
   depositPercentage: {
     type: Number,

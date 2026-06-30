@@ -15,7 +15,7 @@ const authController = {
 
       let provinceDoc = null;
       if (role === 'host') {
-        if (!name || !province || !description || !whatsapp) {
+        if (!name || !province || !description) {
           return res.status(400).json({ message: 'Faltan datos del hospedaje para registrar un anfitrión.' });
         }
         provinceDoc = await provinceService.buscarPorNombre(province);
