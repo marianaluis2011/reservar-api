@@ -8,11 +8,9 @@ import { upload } from '../config/cloudinary.js';
 
 const router = Router();
 
-// Rutas públicas
 router.get('/hospedaje/:accommodationId', accommodationIdParamValidator, validateResult, roomController.listarPorHospedaje);
 router.get('/:id', roomIdParamValidator, validateResult, roomController.obtenerDetalle);
 
-// Rutas protegidas
 router.post(
   '/',
   validateJwt,

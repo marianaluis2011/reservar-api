@@ -60,8 +60,10 @@ async function sendRegisterEmail(to, name) {
 }
 
 async function sendBookingCreatedEmail(booking) {
+    const to = booking.user?.email || booking.guestEmail;
+    if (!to) return;
     const html = renderTemplate("bookingCreated", {
-        fullName: booking.user.fullName,
+        fullName: booking.user?.fullName || booking.guestName || "Huésped",
         accommodationName: booking.accommodation.name,
         roomName: booking.room.name,
         checkIn: formatDate(booking.checkIn),
@@ -71,7 +73,7 @@ async function sendBookingCreatedEmail(booking) {
     });
     const info = await transporter.sendMail({
         from: `"Hospedar" <${SMTP_USER}>`,
-        to: booking.user.email,
+        to,
         subject: "Reserva creada en Hospedar",
         text: "Tu reserva fue registrada correctamente.",
         html,
@@ -80,8 +82,10 @@ async function sendBookingCreatedEmail(booking) {
 }
 
 async function sendBookingCancelledEmail(booking) {
+    const to = booking.user?.email || booking.guestEmail;
+    if (!to) return;
     const html = renderTemplate("bookingCancelled", {
-        fullName: booking.user.fullName,
+        fullName: booking.user?.fullName || booking.guestName || "Huésped",
         accommodationName: booking.accommodation.name,
         roomName: booking.room.name,
         checkIn: formatDate(booking.checkIn),
@@ -91,7 +95,7 @@ async function sendBookingCancelledEmail(booking) {
     });
     const info = await transporter.sendMail({
         from: `"Hospedar" <${SMTP_USER}>`,
-        to: booking.user.email,
+        to,
         subject: "Reserva cancelada en Hospedar",
         text: "Tu reserva fue cancelada correctamente.",
         html,
@@ -100,8 +104,10 @@ async function sendBookingCancelledEmail(booking) {
 }
 
 async function sendBookingConfirmedEmail(booking) {
+    const to = booking.user?.email || booking.guestEmail;
+    if (!to) return;
     const html = renderTemplate("bookingConfirmed", {
-        fullName: booking.user.fullName,
+        fullName: booking.user?.fullName || booking.guestName || "Huésped",
         accommodationName: booking.accommodation.name,
         roomName: booking.room.name,
         checkIn: formatDate(booking.checkIn),
@@ -111,7 +117,7 @@ async function sendBookingConfirmedEmail(booking) {
     });
     const info = await transporter.sendMail({
         from: `"Hospedar" <${SMTP_USER}>`,
-        to: booking.user.email,
+        to,
         subject: "Tu reserva fue confirmada en Hospedar",
         text: "Tu reserva fue confirmada.",
         html,
