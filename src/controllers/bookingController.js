@@ -30,8 +30,6 @@ const bookingController = {
       if (!guestEmail || !room || !checkIn || !checkOut) {
         return res.status(400).json({ message: 'Faltan datos para crear la reserva' });
       }
-      // Reserva informal: si el cliente está registrado, se vincula a su cuenta;
-      // si no, se guarda solo el email/nombre del huésped (proceso por fuera de la app).
       const guest = await userService.findUserByEmail(guestEmail);
       const accommodation = await accommodationService.obtenerPorAdmin(req.user.id);
       if (!accommodation) {

@@ -18,7 +18,6 @@ const app = express();
 
 conectarDB();
 
-// ✅ Configuración de CORS (antes de las rutas)
 app.use(cors({
   origin: CLIENT_URL, // tu frontend en dev
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
@@ -28,7 +27,6 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Rutas
 app.use('/api/auth', authRoutes);
 
 app.get('/api/protected', validateJwt, (  req, res) => {
@@ -45,7 +43,6 @@ app.use('/api/reservas', reservaRoutes);
 app.use("/api/admin", adminRoutes);
 app.use('/api/usuarios', usuarioRoutes);
 
-// Manejo de errores
 app.use((req, res) => {
   res.status(404).json({ message: "Ruta no encontrada" });
 });
