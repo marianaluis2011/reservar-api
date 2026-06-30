@@ -232,6 +232,15 @@ const bookingController = {
     } catch (error) {
       res.status(500).json({ message: 'Error al obtener reservas' });
     }
+  },
+
+  fechasOcupadas: async (req, res) => {
+    try {
+      const fechas = await bookingService.listarOcupadasPorRoom(req.params.roomId);
+      res.status(200).json(fechas);
+    } catch (error) {
+      res.status(500).json({ message: 'Error al obtener fechas ocupadas' });
+    }
   }
 };
 export default bookingController;
