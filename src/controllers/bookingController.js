@@ -26,17 +26,13 @@ const bookingController = {
 
   crearPorOwner: async (req, res) => {
     try {
-      const { guestEmail, room, checkIn, checkOut } = req.body;
+      const { guestEmail, guestName, room, checkIn, checkOut } = req.body;
       if (!guestEmail || !room || !checkIn || !checkOut) {
         return res.status(400).json({ message: 'Faltan datos para crear la reserva' });
       }
+      // Reserva informal: si el cliente está registrado, se vincula a su cuenta;
+      // si no, se guarda solo el email/nombre del huésped (proceso por fuera de la app).
       const guest = await userService.findUserByEmail(guestEmail);
-      if (!guest) {
-        return res.status(404).json({ message: 'No existe un cliente registrado con ese email' });
-      }
-      if (guest.role !== 'guest') {
-        return res.status(400).json({ message: 'El email ingresado no pertenece a un cliente' });
-      }
       const accommodation = await accommodationService.obtenerPorAdmin(req.user.id);
       if (!accommodation) {
         return res.status(404).json({ message: 'No tienes un hospedaje asignado' });
@@ -65,8 +61,11 @@ const bookingController = {
         Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24))
       );
       const totalPrice = nights * roomDoc.pricePerNight;
+      const isRegisteredGuest = guest && guest.role === 'guest';
       const newBooking = await bookingService.crear({
-        user: guest._id,
+        user: isRegisteredGuest ? guest._id : undefined,
+        guestEmail,
+        guestName: guestName || guest?.fullName,
         accommodation: accommodation._id,
         room,
         checkIn,
